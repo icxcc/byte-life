@@ -204,7 +204,7 @@
             <div class="flex justify-between items-center">
               <h2 class="text-2xl font-bold text-gray-900 dark:text-white">项目管理</h2>
               <button
-                @click="showProjectForm = true"
+                @click="openProjectEditor()"
                 class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
               >
                 添加项目
@@ -222,20 +222,35 @@
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   <tr v-for="project in projects" :key="project.id">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      {{ project.title }}
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ project.title }}</div>
+                        <span v-if="project.featured" class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                          推荐
+                        </span>
+                      </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {{ project.tech.join(', ') }}
+                      {{ Array.isArray(project.tech) ? project.tech.join(', ') : project.technologies?.join(', ') || '' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      <span :class="getStatusClass(project.status)" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
                         {{ project.status }}
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 mr-4">编辑</button>
-                      <button class="text-red-600 hover:text-red-900 dark:text-red-400">删除</button>
+                      <button 
+                        @click="openProjectEditor(project)"
+                        class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 mr-4"
+                      >
+                        编辑
+                      </button>
+                      <button 
+                        @click="deleteProject(project.id)"
+                        class="text-red-600 hover:text-red-900 dark:text-red-400"
+                      >
+                        删除
+                      </button>
                     </td>
                   </tr>
                 </tbody>
@@ -248,7 +263,7 @@
             <div class="flex justify-between items-center">
               <h2 class="text-2xl font-bold text-gray-900 dark:text-white">博客管理</h2>
               <button
-                @click="showBlogForm = true"
+                @click="openArticleEditor()"
                 class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
               >
                 写文章
@@ -262,17 +277,40 @@
                 <div v-for="post in blogPosts" :key="post.id" class="p-6">
                   <div class="flex items-start justify-between">
                     <div class="flex-1">
-                      <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ post.title }}</h4>
+                      <div class="flex items-center space-x-2">
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ post.title }}</h4>
+                        <span v-if="post.published" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                          已发布
+                        </span>
+                        <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+                          草稿
+                        </span>
+                        <span v-if="post.featured" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                          推荐
+                        </span>
+                      </div>
                       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ post.excerpt }}</p>
                       <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                         <span>{{ formatDate(post.createdAt) }}</span>
                         <span>{{ post.category }}</span>
                         <span>{{ post.readTime }} 分钟阅读</span>
+                        <span>{{ post.views }} 次浏览</span>
+                        <span>{{ post.likes }} 个赞</span>
                       </div>
                     </div>
                     <div class="flex space-x-2">
-                      <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">编辑</button>
-                      <button class="text-red-600 hover:text-red-900 dark:text-red-400">删除</button>
+                      <button 
+                        @click="openArticleEditor(post)"
+                        class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400"
+                      >
+                        编辑
+                      </button>
+                      <button 
+                        @click="deleteArticle(post.id)"
+                        class="text-red-600 hover:text-red-900 dark:text-red-400"
+                      >
+                        删除
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -316,6 +354,24 @@
         </div>
       </div>
     </div>
+
+    <!-- 文章编辑器 -->
+    <ArticleEditor
+      v-if="showArticleEditor"
+      :article="currentArticle"
+      :is-edit="!!currentArticle"
+      @close="closeArticleEditor"
+      @save="saveArticle"
+    />
+
+    <!-- 项目编辑器 -->
+    <ProjectEditor
+      v-if="showProjectEditor"
+      :project="currentProject"
+      :is-edit="!!currentProject"
+      @close="closeProjectEditor"
+      @save="saveProject"
+    />
   </div>
 </template>
 
@@ -334,8 +390,10 @@ const isLoading = ref(false)
 const dataLoading = ref(false)
 const loginError = ref('')
 const activeTab = ref('dashboard')
-const showProjectForm = ref(false)
-const showBlogForm = ref(false)
+const showArticleEditor = ref(false)
+const showProjectEditor = ref(false)
+const currentArticle = ref(null)
+const currentProject = ref(null)
 
 // 登录表单
 const loginForm = ref({
@@ -547,18 +605,175 @@ const loadBlog = async () => {
       throw new Error('未找到认证令牌')
     }
 
-    const response = await $fetch('/api/admin/blog', {
+    const response = await $fetch('/api/admin/articles', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
     if (response.success) {
-      blogPosts.value = response.data.posts
+      blogPosts.value = response.data.articles
       stats.value.blogPosts = response.data.stats.total
     }
   } catch (error) {
     console.error('加载博客失败:', error)
   }
+}
+
+// 打开文章编辑器
+const openArticleEditor = (article = null) => {
+  currentArticle.value = article
+  showArticleEditor.value = true
+}
+
+// 关闭文章编辑器
+const closeArticleEditor = () => {
+  showArticleEditor.value = false
+  currentArticle.value = null
+}
+
+// 保存文章
+const saveArticle = async (articleData) => {
+  try {
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
+    if (currentArticle.value) {
+      // 更新文章
+      await $fetch(`/api/admin/articles/${currentArticle.value.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: articleData
+      })
+    } else {
+      // 创建文章
+      await $fetch('/api/admin/articles', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: articleData
+      })
+    }
+
+    // 重新加载文章列表
+    await loadBlog()
+  } catch (error) {
+    console.error('保存文章失败:', error)
+  }
+}
+
+// 删除文章
+const deleteArticle = async (articleId) => {
+  if (!confirm('确定要删除这篇文章吗？')) {
+    return
+  }
+
+  try {
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
+    await $fetch(`/api/admin/articles/${articleId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    // 重新加载文章列表
+    await loadBlog()
+  } catch (error) {
+    console.error('删除文章失败:', error)
+  }
+}
+
+// 打开项目编辑器
+const openProjectEditor = (project = null) => {
+  currentProject.value = project
+  showProjectEditor.value = true
+}
+
+// 关闭项目编辑器
+const closeProjectEditor = () => {
+  showProjectEditor.value = false
+  currentProject.value = null
+}
+
+// 保存项目
+const saveProject = async (projectData) => {
+  try {
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
+    if (currentProject.value) {
+      // 更新项目
+      await $fetch(`/api/admin/projects/${currentProject.value.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: projectData
+      })
+    } else {
+      // 创建项目
+      await $fetch('/api/admin/projects', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: projectData
+      })
+    }
+
+    // 重新加载项目列表
+    await loadProjects()
+  } catch (error) {
+    console.error('保存项目失败:', error)
+  }
+}
+
+// 删除项目
+const deleteProject = async (projectId) => {
+  if (!confirm('确定要删除这个项目吗？')) {
+    return
+  }
+
+  try {
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
+    await $fetch(`/api/admin/projects/${projectId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    // 重新加载项目列表
+    await loadProjects()
+  } catch (error) {
+    console.error('删除项目失败:', error)
+  }
+}
+
+// 获取状态样式类
+const getStatusClass = (status) => {
+  const statusClasses = {
+    '进行中': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    '已完成': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    '暂停': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+    '计划中': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+  }
+  return statusClasses[status] || statusClasses['进行中']
 }
 
 // 标记消息为已读

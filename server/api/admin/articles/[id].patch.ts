@@ -1,0 +1,89 @@
+import { supabaseAdmin } from '~/lib/supabase'
+
+export default defineEventHandler(async (event) => {
+  try {
+    // 验证管理员权限
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: '未授权访问'
+      })
+    }
+
+    const token = authHeader.substring(7)
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+    
+    if (authError || !user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: '认证失败'
+      })
+    }
+
+    // 获取文章 ID
+    const articleId = getRouterParam(event, 'id')
+    if (!articleId) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: '文章 ID 不能为空'
+      })
+    }
+
+    // 获取请求体数据
+    const body = await readBody(event)
+    const {
+      title,
+      slug,
+      content,
+      excerpt,
+      coverImage,
+      category,
+      tags,
+      published,
+      featured
+    } = body
+
+    // 验证必填字段
+    if (!title || !slug || !content) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: '标题、URL别名和内容为必填字段'
+      })
+    }
+
+    // 模拟更新文章
+    const updatedArticle = {
+      id: parseInt(articleId),
+      title,
+      slug,
+      content,
+      excerpt: excerpt || content.substring(0, 200) + '...',
+      coverImage: coverImage || '',
+      category: category || '',
+      tags: tags || '',
+      published: published || false,
+      featured: featured || false,
+      publishedAt: published ? new Date().toISOString() : null,
+      updatedAt: new Date().toISOString(),
+      readTime: Math.ceil(content.length / 200), // 简单估算阅读时间
+    }
+
+    // 在实际应用中，这里应该更新数据库中的数据
+    console.log('更新文章:', updatedArticle)
+
+    return {
+      success: true,
+      data: {
+        article: updatedArticle
+      },
+      message: '文章更新成功'
+    }
+  } catch (error: any) {
+    console.error('更新文章失败:', error)
+    throw createError({
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || '服务器内部错误'
+    })
+  }
+})
