@@ -9,7 +9,11 @@
 <script setup lang="ts">
 import { supabase } from '~/lib/supabase'
 
-definePageMeta({ layout: 'admin' })
+// 页面元数据配置
+definePageMeta({ 
+  layout: 'admin',
+  middleware: 'auth'
+})
 
 const stats = ref({
   unreadMessages: 0,
@@ -90,12 +94,6 @@ const loadRecentMessages = async () => {
     console.error('加载最近消息失败:', error)
   }
 }
-
-// 添加中间件进行认证检查
-definePageMeta({ 
-  layout: 'admin',
-  middleware: 'auth'
-})
 
 onMounted(async () => {
   try {
