@@ -9,20 +9,20 @@
     </div>
 
     <!-- 管理员仪表板 -->
-    <div v-else-if="isAuthenticated" class="flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
+    <div v-else-if="isAuthenticated" class="admin-layout flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
       <!-- 侧边栏 -->
       <div class="w-64 bg-white dark:bg-gray-800 shadow-lg flex-shrink-0 flex flex-col">
         <div class="p-6 flex-shrink-0">
           <h1 class="text-xl font-bold text-gray-900 dark:text-white">管理后台</h1>
         </div>
-        <nav class="flex-1 overflow-y-auto">
+        <nav class="flex-1 overflow-y-auto custom-scrollbar">
           <div class="px-6 py-3">
             <NuxtLink
               v-for="item in menuItems"
               :key="item.key"
               :to="item.to"
               :class="[
-                'w-full text-left px-4 py-2 rounded-lg mb-2 transition-colors block no-underline',
+                'menu-item w-full text-left px-4 py-2 rounded-lg mb-2 block no-underline',
                 $route.path === item.to
                   ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
                   : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
@@ -35,7 +35,7 @@
           <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
             <button
               @click="handleLogout"
-              class="w-full text-left px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+              class="menu-item w-full text-left px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
             >
               <Icon name="heroicons:arrow-right-on-rectangle" class="inline-block w-5 h-5 mr-3" />
               退出登录
@@ -56,9 +56,18 @@
         </header>
         
         <!-- 主内容 -->
-        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-          <div class="p-6">
-            <slot />
+        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 custom-scrollbar">
+          <div class="content-container p-6">
+            <!-- 页面过渡动画 -->
+            <Transition
+              name="page"
+              mode="out-in"
+              appear
+            >
+              <div :key="$route.path">
+                <slot />
+              </div>
+            </Transition>
           </div>
         </main>
       </div>
@@ -171,3 +180,60 @@ provide('auth', {
   isAuthenticated: readonly(isAuthenticated)
 })
 </script>
+
+<style scoped>
+/* 页面过渡动画 */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.2s ease-in-out;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.page-enter-to,
+.page-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* 侧边栏菜单项过渡 */
+.menu-item {
+  transition: all 0.15s ease-in-out;
+}
+
+.menu-item:hover {
+  transform: translateX(2px);
+}
+
+/* 滚动条样式优化 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+/* 防止内容跳动 */
+.content-container {
+  min-height: 0;
+  will-change: transform;
+}
+</style>

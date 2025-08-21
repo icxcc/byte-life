@@ -67,6 +67,15 @@ export default defineNuxtConfig({
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         { rel: 'manifest', href: '/site.webmanifest' }
       ]
+    },
+    // 页面过渡配置
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in'
+    },
+    layoutTransition: {
+      name: 'layout',
+      mode: 'out-in'
     }
   },
 
