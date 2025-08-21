@@ -1,56 +1,70 @@
+import { supabase } from '~/lib/supabase'
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    
-    // 验证请求数据
-    const { name, email, subject, message } = body
-    
-    if (!name || !email || !subject || !message) {
+    const { name, email, message } = body
+
+    // 验证必填字段
+    if (!name || !email || !message) {
       throw createError({
         statusCode: 400,
-        statusMessage: '所有字段都是必填的'
+        statusMessage: '请填写所有必填字段'
       })
     }
-    
+
     // 验证邮箱格式
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       throw createError({
         statusCode: 400,
-        statusMessage: '邮箱格式不正确'
+        statusMessage: '请输入有效的邮箱地址'
       })
     }
-    
-    // 这里可以添加实际的邮件发送逻辑
-    // 例如使用 nodemailer 或其他邮件服务
-    console.log('收到联系表单提交:', {
-      name,
-      email,
-      subject,
-      message,
-      timestamp: new Date().toISOString()
-    })
-    
-    // 模拟处理时间
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // 返回成功响应
+
+    // 获取客户端信息
+    const clientIP = getClientIP(event) || '未知'
+    const userAgent = getHeader(event, 'user-agent') || '未知'
+
+    // 保存到 Supabase 数据库
+    const { data, error } = await supabase
+      .from('contacts')
+      .insert([
+        {
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          message: message.trim(),
+          ip_address: clientIP,
+          user_agent: userAgent,
+          read: false
+        }
+      ])
+      .select()
+
+    if (error) {
+      console.error('Supabase 插入错误:', error)
+      throw createError({
+        statusCode: 500,
+        statusMessage: '数据保存失败，请稍后重试'
+      })
+    }
+
+    console.log('联系消息已保存到数据库:', data)
+
     return {
       success: true,
       message: '消息发送成功！我会尽快回复您。',
-      timestamp: new Date().toISOString()
+      data: data[0]
     }
-    
   } catch (error) {
-    console.error('联系表单处理错误:', error)
-    
     if (error.statusCode) {
       throw error
     }
     
+    console.error('联系表单处理错误:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: '服务器内部错误，请稍后重试'
+      statusMessage: '发送失败，请稍后重试'
     })
   }
 })
