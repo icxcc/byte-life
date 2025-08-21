@@ -18,7 +18,7 @@ const stats = ref({
   todayVisits: 0
 })
 
-const recentMessages = ref([])
+const recentMessages = ref<any[]>([])
 
 const refreshData = async () => {
   await Promise.all([loadStats(), loadRecentMessages()])
@@ -91,22 +91,39 @@ const loadRecentMessages = async () => {
   }
 }
 
+// 添加中间件进行认证检查
+definePageMeta({ 
+  layout: 'admin',
+  middleware: 'auth'
+})
+
 onMounted(async () => {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) {
-    await navigateTo('/admin/login')
-    return
-  }
-
-  await refreshData()
-
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_OUT' || !session) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user) {
+      console.log('未登录，重定向到登录页面')
       await navigateTo('/admin/login')
-    } else if (event === 'SIGNED_IN' && session?.user) {
-      await refreshData()
+      return
     }
-  })
+
+    console.log('用户已登录:', session.user.email)
+    await refreshData()
+
+    // 监听认证状态变化
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('认证状态变化:', event)
+      if (event === 'SIGNED_OUT' || !session) {
+        console.log('用户已登出，重定向到登录页面')
+        await navigateTo('/admin/login')
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        console.log('用户已登录，刷新数据')
+        await refreshData()
+      }
+    })
+  } catch (error) {
+    console.error('认证检查失败:', error)
+    await navigateTo('/admin/login')
+  }
 })
 
 useHead({ title: '管理后台 - ByteLife' })
