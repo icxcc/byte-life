@@ -1,5 +1,30 @@
 import { supabase } from '~/lib/supabase'
 
+// 获取客户端IP地址的工具函数
+function getClientIP(event: any): string {
+  // 尝试从各种可能的头部获取真实IP
+  const headers = [
+    'x-forwarded-for',
+    'x-real-ip', 
+    'x-client-ip',
+    'cf-connecting-ip', // Cloudflare
+    'x-forwarded',
+    'forwarded-for',
+    'forwarded'
+  ]
+  
+  for (const header of headers) {
+    const value = getHeader(event, header)
+    if (value) {
+      // x-forwarded-for 可能包含多个IP，取第一个
+      return value.split(',')[0].trim()
+    }
+  }
+  
+  // 如果都没有，返回连接的远程地址
+  return event.node?.req?.socket?.remoteAddress || '未知'
+}
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
@@ -23,7 +48,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // 获取客户端信息
-    const clientIP = getClientIP(event) || '未知'
+    const clientIP = getClientIP(event)
     const userAgent = getHeader(event, 'user-agent') || '未知'
 
     // 保存到 Supabase 数据库

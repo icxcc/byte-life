@@ -1,0 +1,17 @@
+{
+  "name": "字节生活 - ByteLife",
+  "short_name": "ByteLife",
+  "description": "个人网站，展示作品、博客和在线互动功能",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#0ea5e9",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

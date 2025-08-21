@@ -205,7 +205,7 @@ useSEO({
 })
 
 // 使用 Nuxt 4.0 的数据获取
-const { data: projects } = await useLazyFetch('/api/projects', {
+const { data: projects } = await useLazyFetch('/api/public/projects', {
   default: () => [],
   server: false
 })

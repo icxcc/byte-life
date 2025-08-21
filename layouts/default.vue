@@ -2,7 +2,16 @@
   <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
     <TheHeader />
     <main>
-      <slot />
+      <!-- 前端页面过渡动画 -->
+      <Transition
+        name="frontend-page"
+        mode="out-in"
+        appear
+      >
+        <div :key="$route.path">
+          <slot />
+        </div>
+      </Transition>
     </main>
     <TheFooter />
   </div>

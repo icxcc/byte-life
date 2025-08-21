@@ -16,6 +16,12 @@ export default defineNuxtConfig({
     compatibilityVersion: 4
   },
 
+  // 明确启用页面功能
+  pages: true,
+
+  // SSR 配置
+  ssr: true,
+
   modules: [
     '@nuxt/content',
     '@nuxt/eslint',
@@ -64,34 +70,18 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         { rel: 'manifest', href: '/site.webmanifest' }
       ]
     },
-    // 页面过渡配置
-    pageTransition: {
-      name: 'page',
-      mode: 'out-in'
-    },
-    layoutTransition: {
-      name: 'layout',
-      mode: 'out-in'
-    }
+    // 页面过渡配置 - 仅对前端页面启用
+    pageTransition: false,
+    layoutTransition: false
   },
 
   // 性能优化
   nitro: {
     compressPublicAssets: true,
     minify: true
-  },
-
-  // 路由优化
-  router: {
-    options: {
-      scrollBehavior: () => {
-        return { behavior: 'smooth' }
-      }
-    }
   },
 
   // 图片优化配置
