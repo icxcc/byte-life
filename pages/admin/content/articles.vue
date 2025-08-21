@@ -59,7 +59,7 @@
     </div>
 
     <!-- 文章编辑器 -->
-    <AdminArticleEditor
+    <ArticleEditor
       v-if="showArticleEditor"
       :article="currentArticle"
       :is-edit="!!currentArticle"

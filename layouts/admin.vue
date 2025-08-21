@@ -11,12 +11,12 @@
     <!-- 管理员仪表板 -->
     <div v-else-if="isAuthenticated" class="admin-layout flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
       <!-- 侧边栏 -->
-      <AdminSidebar @logout="handleLogout" />
+      <Sidebar @logout="handleLogout" />
 
       <!-- 主内容区域 -->
       <div class="flex-1 flex flex-col overflow-hidden">
         <!-- 顶部导航栏 -->
-        <AdminTopNav @logout="handleLogout" />
+        <TopNav @logout="handleLogout" />
         
         <!-- 主内容 -->
         <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 custom-scrollbar">
@@ -27,7 +27,7 @@
         </main>
 
         <!-- 底部信息 -->
-        <AdminFooter />
+        <Footer />
       </div>
     </div>
   </div>
