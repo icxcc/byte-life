@@ -191,6 +191,9 @@
 </template>
 
 <script setup lang="ts">
+// 显式导入 StatsCard 组件
+import StatsCard from '~/components/admin/StatsCard.vue'
+
 interface Props {
   stats: {
     unreadMessages: number
