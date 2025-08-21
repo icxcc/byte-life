@@ -406,14 +406,36 @@ const handleLogin = async () => {
 // 退出登录
 const handleLogout = async () => {
   try {
+    // 使用 Supabase 退出登录
     const { error } = await supabase.auth.signOut()
     if (error) {
       console.error('退出登录失败:', error)
+      throw error
     }
+    
+    // 清理本地状态
+    user.value = null
+    currentSession.value = null
+    loginForm.value = { email: '', password: '' }
+    activeTab.value = 'dashboard'
+    
+    // 清理数据
+    messages.value = []
+    projects.value = []
+    blogPosts.value = []
+    stats.value = {
+      unreadMessages: 0,
+      projectCount: 0,
+      blogPosts: 0,
+      todayVisits: 156
+    }
+    
+    console.log('退出登录成功')
   } catch (error) {
     console.error('退出登录失败:', error)
-  } finally {
+    // 即使 Supabase 退出失败，也要清理本地状态
     user.value = null
+    currentSession.value = null
     loginForm.value = { email: '', password: '' }
     activeTab.value = 'dashboard'
   }
@@ -616,17 +638,35 @@ onMounted(async () => {
   const { data: { session } } = await supabase.auth.getSession()
   if (session?.user) {
     user.value = session.user
+    currentSession.value = session
     await loadDashboardData()
   }
 
   // 监听认证状态变化
   supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('认证状态变化:', event, session?.user?.email)
+    
     if (event === 'SIGNED_IN' && session?.user) {
       user.value = session.user
+      currentSession.value = session
       await loadDashboardData()
-    } else if (event === 'SIGNED_OUT') {
+    } else if (event === 'SIGNED_OUT' || !session) {
+      // 清理所有状态
       user.value = null
+      currentSession.value = null
       activeTab.value = 'dashboard'
+      loginForm.value = { email: '', password: '' }
+      
+      // 清理数据
+      messages.value = []
+      projects.value = []
+      blogPosts.value = []
+      stats.value = {
+        unreadMessages: 0,
+        projectCount: 0,
+        blogPosts: 0,
+        todayVisits: 156
+      }
     }
   })
 })
