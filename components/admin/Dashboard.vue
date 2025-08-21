@@ -10,7 +10,7 @@
       </div>
       <div class="flex items-center space-x-3">
         <button
-          @click="refreshData"
+          @click="$emit('refresh')"
           :disabled="isRefreshing"
           class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
         >
@@ -68,8 +68,8 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">快速操作</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button
-          @click="$emit('switchTab', 'messages')"
+        <NuxtLink
+          to="/admin/system/messages"
           class="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
         >
           <Icon name="heroicons:envelope" class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" />
@@ -77,21 +77,21 @@
             <p class="font-medium text-blue-900 dark:text-blue-100">查看消息</p>
             <p class="text-sm text-blue-600 dark:text-blue-300">处理用户联系</p>
           </div>
-        </button>
+        </NuxtLink>
         
-        <button
-          @click="$emit('switchTab', 'projects')"
+        <NuxtLink
+          to="/admin/content/projects"
           class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
         >
           <Icon name="heroicons:plus-circle" class="w-6 h-6 text-green-600 dark:text-green-400 mr-3" />
           <div class="text-left">
-            <p class="font-medium text-green-900 dark:text-green-100">添加项目</p>
-            <p class="text-sm text-green-600 dark:text-green-300">创建新项目</p>
+            <p class="font-medium text-green-900 dark:text-green-100">管理项目</p>
+            <p class="text-sm text-green-600 dark:text-green-300">创建和编辑项目</p>
           </div>
-        </button>
+        </NuxtLink>
         
-        <button
-          @click="$emit('switchTab', 'blog')"
+        <NuxtLink
+          to="/admin/content/articles"
           class="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
         >
           <Icon name="heroicons:pencil-square" class="w-6 h-6 text-purple-600 dark:text-purple-400 mr-3" />
@@ -99,7 +99,7 @@
             <p class="font-medium text-purple-900 dark:text-purple-100">写文章</p>
             <p class="text-sm text-purple-600 dark:text-purple-300">发布新内容</p>
           </div>
-        </button>
+        </NuxtLink>
       </div>
     </div>
 
@@ -110,12 +110,12 @@
         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">最新消息</h3>
-            <button
-              @click="$emit('switchTab', 'messages')"
+            <NuxtLink
+              to="/admin/system/messages"
               class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300"
             >
               查看全部
-            </button>
+            </NuxtLink>
           </div>
         </div>
         <div class="p-6">
@@ -210,21 +210,10 @@ interface Props {
 
 defineProps<Props>()
 defineEmits<{
-  switchTab: [tab: string]
   refresh: []
 }>()
 
 const isRefreshing = ref(false)
-
-const refreshData = async () => {
-  isRefreshing.value = true
-  try {
-    await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟刷新延迟
-    // 这里可以调用实际的数据刷新逻辑
-  } finally {
-    isRefreshing.value = false
-  }
-}
 
 const getInitials = (name: string) => {
   return name
