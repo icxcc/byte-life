@@ -65,7 +65,7 @@
               appear
             >
               <div :key="$route.path">
-                <slot />
+                <NuxtPage />
               </div>
             </Transition>
           </div>

@@ -84,8 +84,26 @@ const currentArticle = ref(null)
 
 // 获取认证令牌
 const getAuthToken = async () => {
-  const { data: { session } } = await supabase.auth.getSession()
-  return session?.access_token
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession()
+    if (error) {
+      console.error('获取会话失败:', error)
+      throw error
+    }
+    
+    if (!session?.access_token) {
+      console.error('未找到访问令牌')
+      // 重定向到登录页面
+      await navigateTo('/admin')
+      throw new Error('未找到访问令牌')
+    }
+    
+    return session.access_token
+  } catch (error) {
+    console.error('获取认证令牌失败:', error)
+    await navigateTo('/admin')
+    throw error
+  }
 }
 
 // 加载博客数据
