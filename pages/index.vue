@@ -210,7 +210,7 @@ const { data: projects } = await useLazyFetch('/api/projects', {
   server: false
 })
 
-const { data: posts } = await useLazyFetch('/api/posts', {
+const { data: posts } = await useLazyFetch('/api/blog/posts', {
   default: () => [],
   server: false
 })

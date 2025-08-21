@@ -356,7 +356,7 @@
     </div>
 
     <!-- 文章编辑器 -->
-    <ArticleEditor
+    <AdminArticleEditor
       v-if="showArticleEditor"
       :article="currentArticle"
       :is-edit="!!currentArticle"
@@ -365,7 +365,7 @@
     />
 
     <!-- 项目编辑器 -->
-    <ProjectEditor
+    <AdminProjectEditor
       v-if="showProjectEditor"
       :project="currentProject"
       :is-edit="!!currentProject"

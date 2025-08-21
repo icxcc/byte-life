@@ -3,7 +3,7 @@ import { supabase } from '~/lib/supabase'
 export default defineEventHandler(async (event) => {
   try {
     // 从 Supabase 获取已发布的博客文章
-    const { data: posts, error } = await supabase
+    const { data: articles, error } = await supabase
       .from('blog_posts')
       .select('*')
       .eq('status', '已发布')
@@ -17,26 +17,28 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // 格式化博客数据
-    const formattedPosts = posts.map(post => ({
-      id: post.id,
-      title: post.title,
-      slug: post.slug,
-      excerpt: post.excerpt,
-      content: post.content,
-      category: post.category,
-      tags: post.tags || [],
-      readTime: post.read_time || 5,
-      views: post.views || 0,
-      likes: post.likes || 0,
-      author: post.author,
-      publishedAt: post.published_at,
-      createdAt: post.created_at
+    // 格式化为 posts 格式供前端使用
+    const posts = articles.map(article => ({
+      id: article.id,
+      title: article.title,
+      slug: article.slug,
+      excerpt: article.excerpt,
+      content: article.content,
+      category: article.category,
+      tags: article.tags || [],
+      readTime: article.read_time || 5,
+      views: article.views || 0,
+      likes: article.likes || 0,
+      author: article.author,
+      publishedAt: article.published_at,
+      createdAt: article.created_at,
+      coverImage: article.cover_image,
+      featured: article.featured
     }))
 
     return {
       success: true,
-      data: formattedPosts
+      data: posts
     }
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in error) {
