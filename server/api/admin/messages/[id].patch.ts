@@ -1,13 +1,26 @@
-import { supabase } from '~/lib/supabase'
+import { supabase, supabaseAdmin } from '~/lib/supabase'
 
 export default defineEventHandler(async (event) => {
   try {
-    // 验证管理员权限
-    const adminToken = getCookie(event, 'admin-token')
-    if (!adminToken) {
+    // 验证 Supabase Authentication
+    const authHeader = getHeader(event, 'authorization')
+    
+    if (!authHeader) {
       throw createError({
         statusCode: 401,
         statusMessage: '未授权访问'
+      })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    
+    // 使用 Supabase 认证验证令牌
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+    
+    if (authError || !user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: '认证失败'
       })
     }
 

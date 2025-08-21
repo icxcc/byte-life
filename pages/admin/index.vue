@@ -43,7 +43,7 @@
             {{ loginError }}
           </div>
 
-          <div>
+          <div class="space-y-4">
             <button
               type="submit"
               :disabled="isLoading"
@@ -52,6 +52,19 @@
               <span v-if="isLoading">登录中...</span>
               <span v-else>登录</span>
             </button>
+            
+            <div class="text-center space-y-2">
+              <div>
+                <NuxtLink to="/admin/forgot-password" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                  忘记密码？
+                </NuxtLink>
+              </div>
+              <div>
+                <NuxtLink to="/admin/register" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                  还没有账户？立即注册
+                </NuxtLink>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -367,22 +380,24 @@ const handleLogin = async () => {
   loginError.value = ''
 
   try {
-    // 使用简单登录 API
-    const response = await $fetch('/api/admin/simple-login', {
-      method: 'POST',
-      body: {
-        email: loginForm.value.email,
-        password: loginForm.value.password
-      }
+    // 使用 Supabase Authentication 登录
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: loginForm.value.email,
+      password: loginForm.value.password
     })
 
-    if (response.success && response.user) {
-      user.value = response.user
-      currentSession.value = response.session
+    if (error) {
+      throw error
+    }
+
+    if (data.user) {
+      user.value = data.user
+      currentSession.value = data.session
       await loadDashboardData()
     }
   } catch (error: any) {
-    loginError.value = error.data?.statusMessage || '邮箱或密码错误'
+    loginError.value = error.message || '邮箱或密码错误'
+    console.error('登录失败:', error)
   } finally {
     isLoading.value = false
   }

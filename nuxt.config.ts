@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  compatibilityDate: '2023-07-15',
   devtools: { enabled: true },
   
   // Nuxt 4.0 实验性特性
@@ -79,7 +79,9 @@ export default defineNuxtConfig({
   // 路由优化
   router: {
     options: {
-      scrollBehaviorType: 'smooth'
+      scrollBehavior: () => {
+        return { behavior: 'smooth' }
+      }
     }
   },
 

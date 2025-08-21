@@ -113,7 +113,6 @@ const formatDate = (date: string) => {
   overflow: hidden;
 }
 </style>
-</template>
 </write_to_file>
 
 <write_to_file>

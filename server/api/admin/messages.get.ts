@@ -2,44 +2,26 @@ import { supabase, supabaseAdmin } from '~/lib/supabase'
 
 export default defineEventHandler(async (event) => {
   try {
-    // 验证认证
+    // 验证 Supabase Authentication
     const authHeader = getHeader(event, 'authorization')
-    const sessionCookie = getCookie(event, 'admin-session')
     
-    if (!authHeader && !sessionCookie) {
+    if (!authHeader) {
       throw createError({
         statusCode: 401,
         statusMessage: '未授权访问'
       })
     }
 
-    let token = ''
-    if (authHeader) {
-      token = authHeader.replace('Bearer ', '')
-    } else if (sessionCookie) {
-      token = sessionCookie
-    }
+    const token = authHeader.replace('Bearer ', '')
     
-    // 检查是否为简单会话令牌
-    if (token.startsWith('admin-session-') || token.startsWith('mock-admin-token-')) {
-      // 简单令牌验证通过，继续执行
-    } else {
-      // 尝试 Supabase 认证
-      try {
-        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
-        
-        if (authError || !user) {
-          throw createError({
-            statusCode: 401,
-            statusMessage: '认证失败'
-          })
-        }
-      } catch (error) {
-        throw createError({
-          statusCode: 401,
-          statusMessage: '认证失败'
-        })
-      }
+    // 使用 Supabase 认证验证令牌
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+    
+    if (authError || !user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: '认证失败'
+      })
     }
 
     // 从数据库获取消息数据

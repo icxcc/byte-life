@@ -49,4 +49,3 @@ const changeClass = computed(() => {
   }
 })
 </script>
-</template>
