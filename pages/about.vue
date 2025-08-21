@@ -18,8 +18,17 @@
             分享我的知识和经验，同时也参与开源项目的贡献。
           </p>
           <div class="flex gap-4 mt-6">
-            <a href="#" class="btn btn-primary">下载简历</a>
-            <a href="#" class="btn btn-secondary">联系我</a>
+            <button @click="downloadResume" class="btn btn-primary" :disabled="isDownloading">
+              <span v-if="isDownloading" class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                下载中...
+              </span>
+              <span v-else>下载简历</span>
+            </button>
+            <NuxtLink to="/contact" class="btn btn-secondary">联系我</NuxtLink>
           </div>
         </div>
       </div>
@@ -204,5 +213,47 @@
 </template>
 
 <script setup>
-// 关于页面组件逻辑
+import { ref } from 'vue'
+
+// 下载状态
+const isDownloading = ref(false)
+
+// 下载简历功能
+const downloadResume = async () => {
+  isDownloading.value = true
+  
+  try {
+    // 调用API获取简历数据
+    const resumeData = await $fetch('/api/resume')
+    
+    // 创建下载链接
+    const blob = new Blob([JSON.stringify(resumeData, null, 2)], { 
+      type: 'application/json' 
+    })
+    const url = URL.createObjectURL(blob)
+    
+    // 创建临时下载链接
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `resume-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    
+    // 清理
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    
+  } catch (error) {
+    console.error('简历下载失败:', error)
+    // 这里可以添加错误提示
+  } finally {
+    isDownloading.value = false
+  }
+}
+
+// SEO设置
+useSEO({
+  title: '关于我',
+  description: '了解我的技能、经验和背景。全栈开发工程师，专注于现代Web技术。'
+})
 </script>

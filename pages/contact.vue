@@ -6,28 +6,86 @@
       <!-- 联系表单 -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
         <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">发送消息</h2>
-        <form>
+        <form @submit.prevent="submitForm">
+          <!-- 提交状态消息 -->
+          <div v-if="submitMessage" class="mb-4 p-4 rounded-md" :class="{
+            'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800': submitType === 'success',
+            'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800': submitType === 'error'
+          }">
+            {{ submitMessage }}
+          </div>
+
           <div class="mb-4">
-            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">姓名</label>
-            <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" />
+            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              姓名 <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="name" 
+              v-model="form.name"
+              class="input"
+              placeholder="请输入您的姓名"
+              required
+            />
           </div>
           
           <div class="mb-4">
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">邮箱</label>
-            <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" />
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              邮箱 <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              v-model="form.email"
+              class="input"
+              placeholder="请输入您的邮箱地址"
+              required
+            />
           </div>
           
           <div class="mb-4">
-            <label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">主题</label>
-            <input type="text" id="subject" name="subject" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" />
+            <label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              主题 <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="subject" 
+              v-model="form.subject"
+              class="input"
+              placeholder="请输入消息主题"
+              required
+            />
           </div>
           
           <div class="mb-6">
-            <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">消息</label>
-            <textarea id="message" name="message" rows="5" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"></textarea>
+            <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              消息 <span class="text-red-500">*</span>
+            </label>
+            <textarea 
+              id="message" 
+              v-model="form.message"
+              rows="5" 
+              class="input resize-none"
+              placeholder="请输入您想要发送的消息内容..."
+              required
+            ></textarea>
           </div>
           
-          <button type="submit" class="btn btn-primary w-full">发送消息</button>
+          <button 
+            type="submit" 
+            class="btn btn-primary w-full"
+            :disabled="isSubmitting"
+            :class="{ 'opacity-50 cursor-not-allowed': isSubmitting }"
+          >
+            <span v-if="isSubmitting" class="flex items-center justify-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              发送中...
+            </span>
+            <span v-else>发送消息</span>
+          </button>
         </form>
       </div>
       
@@ -116,5 +174,82 @@
 </template>
 
 <script setup>
-// 联系页面组件逻辑
+import { ref } from 'vue'
+
+// 表单数据
+const form = ref({
+  name: '',
+  email: '',
+  subject: '',
+  message: ''
+})
+
+// 表单状态
+const isSubmitting = ref(false)
+const submitMessage = ref('')
+const submitType = ref('') // 'success' or 'error'
+
+// 表单验证
+const validateForm = () => {
+  if (!form.value.name.trim()) {
+    return '请输入您的姓名'
+  }
+  if (!form.value.email.trim()) {
+    return '请输入您的邮箱'
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.value.email)) {
+    return '请输入有效的邮箱地址'
+  }
+  if (!form.value.subject.trim()) {
+    return '请输入消息主题'
+  }
+  if (!form.value.message.trim()) {
+    return '请输入您的消息内容'
+  }
+  return null
+}
+
+// 提交表单
+const submitForm = async () => {
+  const error = validateForm()
+  if (error) {
+    submitMessage.value = error
+    submitType.value = 'error'
+    return
+  }
+
+  isSubmitting.value = true
+  submitMessage.value = ''
+
+  try {
+    // 调用API提交表单
+    const response = await $fetch('/api/contact', {
+      method: 'POST',
+      body: form.value
+    })
+
+    submitMessage.value = response.message || '消息发送成功！我会尽快回复您。'
+    submitType.value = 'success'
+    
+    // 重置表单
+    form.value = {
+      name: '',
+      email: '',
+      subject: '',
+      message: ''
+    }
+  } catch (error) {
+    console.error('表单提交错误:', error)
+    submitMessage.value = error.data?.message || '发送失败，请稍后重试。'
+    submitType.value = 'error'
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+// SEO设置
+useSEO({
+  title: '联系我',
+  description: '通过联系表单与我取得联系，或查看我的联系方式和社交媒体。'
+})
 </script>
