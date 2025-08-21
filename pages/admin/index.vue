@@ -14,15 +14,15 @@
         <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
           <div class="rounded-md shadow-sm -space-y-px">
             <div>
-              <label for="username" class="sr-only">用户名</label>
+              <label for="email" class="sr-only">邮箱</label>
               <input
-                id="username"
-                v-model="loginForm.username"
-                name="username"
-                type="text"
+                id="email"
+                v-model="loginForm.email"
+                name="email"
+                type="email"
                 required
                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                placeholder="用户名"
+                placeholder="邮箱地址"
               >
             </div>
             <div>
@@ -307,13 +307,16 @@
 </template>
 
 <script setup lang="ts">
+import { supabase } from '~/lib/supabase'
+
 // 页面元数据
 definePageMeta({
   layout: false
 })
 
 // 响应式数据
-const isAuthenticated = ref(false)
+const user = ref<any>(null)
+const isAuthenticated = computed(() => !!user.value)
 const isLoading = ref(false)
 const dataLoading = ref(false)
 const loginError = ref('')
@@ -323,7 +326,7 @@ const showBlogForm = ref(false)
 
 // 登录表单
 const loginForm = ref({
-  username: '',
+  email: '',
   password: ''
 })
 
@@ -355,26 +358,31 @@ const settings = ref({
   siteDescription: '一个展示个人技能和项目的现代化网站'
 })
 
+// 存储当前会话信息
+const currentSession = ref<any>(null)
+
 // 登录处理
 const handleLogin = async () => {
   isLoading.value = true
   loginError.value = ''
 
   try {
-    const response = await $fetch('/api/admin/auth', {
+    // 使用简单登录 API
+    const response = await $fetch('/api/admin/simple-login', {
       method: 'POST',
       body: {
-        username: loginForm.value.username,
+        email: loginForm.value.email,
         password: loginForm.value.password
       }
     })
 
-    if (response.success) {
-      isAuthenticated.value = true
+    if (response.success && response.user) {
+      user.value = response.user
+      currentSession.value = response.session
       await loadDashboardData()
     }
   } catch (error: any) {
-    loginError.value = error.data?.message || '登录失败，请重试'
+    loginError.value = error.data?.statusMessage || '邮箱或密码错误'
   } finally {
     isLoading.value = false
   }
@@ -383,12 +391,15 @@ const handleLogin = async () => {
 // 退出登录
 const handleLogout = async () => {
   try {
-    await $fetch('/api/admin/logout', { method: 'POST' })
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('退出登录失败:', error)
+    }
   } catch (error) {
     console.error('退出登录失败:', error)
   } finally {
-    isAuthenticated.value = false
-    loginForm.value = { username: '', password: '' }
+    user.value = null
+    loginForm.value = { email: '', password: '' }
     activeTab.value = 'dashboard'
   }
 }
@@ -437,10 +448,29 @@ const loadDashboardData = async () => {
   }
 }
 
+// 获取认证令牌
+const getAuthToken = async () => {
+  if (currentSession.value?.access_token) {
+    return currentSession.value.access_token
+  }
+  
+  const { data: { session } } = await supabase.auth.getSession()
+  return session?.access_token
+}
+
 // 加载消息数据
 const loadMessages = async () => {
   try {
-    const response = await $fetch('/api/admin/messages')
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
+    const response = await $fetch('/api/admin/messages', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
     if (response.success) {
       messages.value = response.data.messages
       stats.value.unreadMessages = response.data.stats.unread
@@ -453,7 +483,16 @@ const loadMessages = async () => {
 // 加载项目数据
 const loadProjects = async () => {
   try {
-    const response = await $fetch('/api/admin/projects')
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
+    const response = await $fetch('/api/admin/projects', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
     if (response.success) {
       projects.value = response.data.projects
       stats.value.projectCount = response.data.stats.total
@@ -466,7 +505,16 @@ const loadProjects = async () => {
 // 加载博客数据
 const loadBlog = async () => {
   try {
-    const response = await $fetch('/api/admin/blog')
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
+    const response = await $fetch('/api/admin/blog', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
     if (response.success) {
       blogPosts.value = response.data.posts
       stats.value.blogPosts = response.data.stats.total
@@ -479,8 +527,16 @@ const loadBlog = async () => {
 // 标记消息为已读
 const markAsRead = async (messageId: number) => {
   try {
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
     await $fetch(`/api/admin/messages/${messageId}`, {
       method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       body: { read: true }
     })
     
@@ -497,8 +553,16 @@ const markAsRead = async (messageId: number) => {
 // 删除消息
 const deleteMessage = async (messageId: number) => {
   try {
+    const token = await getAuthToken()
+    if (!token) {
+      throw new Error('未找到认证令牌')
+    }
+
     await $fetch(`/api/admin/messages/${messageId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     })
     
     const index = messages.value.findIndex((m: any) => m.id === messageId)
@@ -530,6 +594,27 @@ const formatDate = (date: string) => {
     minute: '2-digit'
   }).format(new Date(date))
 }
+
+// 初始化认证状态
+onMounted(async () => {
+  // 获取当前会话
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.user) {
+    user.value = session.user
+    await loadDashboardData()
+  }
+
+  // 监听认证状态变化
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      user.value = session.user
+      await loadDashboardData()
+    } else if (event === 'SIGNED_OUT') {
+      user.value = null
+      activeTab.value = 'dashboard'
+    }
+  })
+})
 
 // 页面标题
 useHead({

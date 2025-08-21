@@ -3,7 +3,17 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://feayjzwdcrycwqgsepuy.supabase.co'
 const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlYXlqendkY3J5Y3dxZ3NlcHV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2Nzc0MjcsImV4cCI6MjA3MTI1MzQyN30.u95db2_JaPcIZwUu488q130LckazEOYF3jYTWldHaW8'
 
+// 客户端 Supabase 实例
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// 服务端 Supabase 实例（需要 service role key）
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+})
 
 // 数据库表类型定义
 export interface Contact {
