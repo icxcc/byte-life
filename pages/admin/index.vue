@@ -561,7 +561,7 @@ const loadMessages = async () => {
       throw new Error('未找到认证令牌')
     }
 
-    const response = await $fetch('/api/admin/messages', {
+    const response = await $fetch('/api/admin/system/messages', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -583,7 +583,7 @@ const loadProjects = async () => {
       throw new Error('未找到认证令牌')
     }
 
-    const response = await $fetch('/api/admin/projects', {
+    const response = await $fetch('/api/admin/content/projects', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -605,7 +605,7 @@ const loadBlog = async () => {
       throw new Error('未找到认证令牌')
     }
 
-    const response = await $fetch('/api/admin/articles', {
+    const response = await $fetch('/api/admin/content/articles', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -641,7 +641,7 @@ const saveArticle = async (articleData) => {
 
     if (currentArticle.value) {
       // 更新文章
-      await $fetch(`/api/admin/articles/${currentArticle.value.id}`, {
+      await $fetch(`/api/admin/content/articles/${currentArticle.value.id}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -650,7 +650,7 @@ const saveArticle = async (articleData) => {
       })
     } else {
       // 创建文章
-      await $fetch('/api/admin/articles', {
+      await $fetch('/api/admin/content/articles', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -678,7 +678,7 @@ const deleteArticle = async (articleId) => {
       throw new Error('未找到认证令牌')
     }
 
-    await $fetch(`/api/admin/articles/${articleId}`, {
+    await $fetch(`/api/admin/content/articles/${articleId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -714,7 +714,7 @@ const saveProject = async (projectData) => {
 
     if (currentProject.value) {
       // 更新项目
-      await $fetch(`/api/admin/projects/${currentProject.value.id}`, {
+      await $fetch(`/api/admin/content/projects/${currentProject.value.id}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -723,7 +723,7 @@ const saveProject = async (projectData) => {
       })
     } else {
       // 创建项目
-      await $fetch('/api/admin/projects', {
+      await $fetch('/api/admin/content/projects', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -751,7 +751,7 @@ const deleteProject = async (projectId) => {
       throw new Error('未找到认证令牌')
     }
 
-    await $fetch(`/api/admin/projects/${projectId}`, {
+    await $fetch(`/api/admin/content/projects/${projectId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -784,7 +784,7 @@ const markAsRead = async (messageId: number) => {
       throw new Error('未找到认证令牌')
     }
 
-    await $fetch(`/api/admin/messages/${messageId}`, {
+    await $fetch(`/api/admin/system/messages/${messageId}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -810,7 +810,7 @@ const deleteMessage = async (messageId: number) => {
       throw new Error('未找到认证令牌')
     }
 
-    await $fetch(`/api/admin/messages/${messageId}`, {
+    await $fetch(`/api/admin/system/messages/${messageId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`

@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-const { data: posts } = await $fetch('/api/blog/posts')
+const { data: posts } = await $fetch('/api/public/blog/posts')
 
 useSEO({
   title: '博客文章',

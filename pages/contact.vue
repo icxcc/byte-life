@@ -223,7 +223,7 @@ const submitForm = async () => {
 
   try {
     // 调用API提交表单
-    const response = await $fetch('/api/contact', {
+    const response = await $fetch('/api/public/contact', {
       method: 'POST',
       body: form.value
     })
