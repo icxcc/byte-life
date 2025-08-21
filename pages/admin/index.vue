@@ -1,5 +1,5 @@
 <template>
-  <AdminDashboard 
+  <Dashboard 
     :stats="stats" 
     :recent-messages="recentMessages"
     @refresh="refreshData"
