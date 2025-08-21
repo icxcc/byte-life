@@ -85,7 +85,7 @@ const isLoading = ref(true)
 
 // 菜单项
 const menuItems = [
-  { key: 'dashboard', label: '仪表板', icon: 'heroicons:home', to: '/admin/dashboard' },
+  { key: 'dashboard', label: '仪表板', icon: 'heroicons:home', to: '/admin' },
   { key: 'messages', label: '消息管理', icon: 'heroicons:envelope', to: '/admin/system/messages' },
   { key: 'projects', label: '项目管理', icon: 'heroicons:folder', to: '/admin/content/projects' },
   { key: 'blog', label: '博客管理', icon: 'heroicons:document-text', to: '/admin/content/articles' },
@@ -99,6 +99,7 @@ const currentSession = ref<any>(null)
 const getPageTitle = () => {
   const route = useRoute()
   const titleMap: Record<string, string> = {
+    '/admin': '仪表板',
     '/admin/dashboard': '仪表板',
     '/admin/content/articles': '文章管理',
     '/admin/content/projects': '项目管理',

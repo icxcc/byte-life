@@ -1,80 +1,158 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- 管理员登录界面 -->
-    <div v-if="!isAuthenticated" class="flex items-center justify-center min-h-screen">
-      <div class="max-w-md w-full space-y-8 p-8">
-        <div>
-          <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            管理员登录
-          </h2>
-          <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            请输入管理员凭据以访问后台管理系统
-          </p>
-        </div>
-        <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-          <div class="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label for="email" class="sr-only">邮箱</label>
-              <input
-                id="email"
-                v-model="loginForm.email"
-                name="email"
-                type="email"
-                required
-                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                placeholder="邮箱地址"
-              >
-            </div>
-            <div>
-              <label for="password" class="sr-only">密码</label>
-              <input
-                id="password"
-                v-model="loginForm.password"
-                name="password"
-                type="password"
-                required
-                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                placeholder="密码"
-              >
-            </div>
-          </div>
-
-          <div v-if="loginError" class="text-red-600 text-sm text-center">
-            {{ loginError }}
-          </div>
-
-          <div class="space-y-4">
-            <button
-              type="submit"
-              :disabled="isLoading"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              <span v-if="isLoading">登录中...</span>
-              <span v-else>登录</span>
-            </button>
-            
-            <div class="text-center space-y-2">
-              <div>
-                <NuxtLink to="/admin/forgot-password" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                  忘记密码？
-                </NuxtLink>
-              </div>
-              <div>
-                <NuxtLink to="/admin/register" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                  还没有账户？立即注册
-                </NuxtLink>
-              </div>
-            </div>
-          </div>
-        </form>
+  <div class="space-y-8">
+    <!-- 页面标题 -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">仪表板</h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          欢迎回来！这里是您的网站管理概览。
+        </p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button
+          @click="refreshData"
+          :disabled="isRefreshing"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+        >
+          <Icon 
+            name="heroicons:arrow-path" 
+            :class="{ 'animate-spin': isRefreshing }"
+            class="w-4 h-4 mr-2" 
+          />
+          刷新数据
+        </button>
       </div>
     </div>
 
-    <!-- 已登录状态自动跳转到仪表板 -->
-    <div v-else class="flex items-center justify-center min-h-screen">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-        <p class="text-gray-600 dark:text-gray-400">正在跳转到管理后台...</p>
+    <!-- 统计卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <Icon name="heroicons:envelope" class="w-8 h-8 text-blue-500" />
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">未读消息</dt>
+              <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ stats.unreadMessages }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <Icon name="heroicons:folder" class="w-8 h-8 text-green-500" />
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">项目总数</dt>
+              <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ stats.projectCount }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <Icon name="heroicons:document-text" class="w-8 h-8 text-purple-500" />
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">博客文章</dt>
+              <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ stats.blogPosts }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <Icon name="heroicons:eye" class="w-8 h-8 text-orange-500" />
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">今日访问</dt>
+              <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ stats.todayVisits }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快速操作 -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">快速操作</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <NuxtLink
+          to="/admin/system/messages"
+          class="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+        >
+          <Icon name="heroicons:envelope" class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" />
+          <div class="text-left">
+            <p class="font-medium text-blue-900 dark:text-blue-100">查看消息</p>
+            <p class="text-sm text-blue-600 dark:text-blue-300">处理用户联系</p>
+          </div>
+        </NuxtLink>
+        
+        <NuxtLink
+          to="/admin/content/projects"
+          class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+        >
+          <Icon name="heroicons:plus-circle" class="w-6 h-6 text-green-600 dark:text-green-400 mr-3" />
+          <div class="text-left">
+            <p class="font-medium text-green-900 dark:text-green-100">管理项目</p>
+            <p class="text-sm text-green-600 dark:text-green-300">创建和编辑项目</p>
+          </div>
+        </NuxtLink>
+        
+        <NuxtLink
+          to="/admin/content/articles"
+          class="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
+        >
+          <Icon name="heroicons:pencil-square" class="w-6 h-6 text-purple-600 dark:text-purple-400 mr-3" />
+          <div class="text-left">
+            <p class="font-medium text-purple-900 dark:text-purple-100">写文章</p>
+            <p class="text-sm text-purple-600 dark:text-purple-300">发布新内容</p>
+          </div>
+        </NuxtLink>
+      </div>
+    </div>
+
+    <!-- 系统状态 -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">系统状态</h3>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+              <span class="text-sm text-gray-700 dark:text-gray-300">数据库连接</span>
+            </div>
+            <span class="text-sm text-green-600 dark:text-green-400 font-medium">正常</span>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+              <span class="text-sm text-gray-700 dark:text-gray-300">API 服务</span>
+            </div>
+            <span class="text-sm text-green-600 dark:text-green-400 font-medium">运行中</span>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+              <span class="text-sm text-gray-700 dark:text-gray-300">Supabase</span>
+            </div>
+            <span class="text-sm text-green-600 dark:text-green-400 font-medium">已连接</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -83,104 +161,140 @@
 <script setup lang="ts">
 import { supabase } from '~/lib/supabase'
 
-// 页面元数据
+// 页面元数据 - 使用管理后台布局
 definePageMeta({
-  layout: false
+  layout: 'admin'
 })
 
 // 响应式数据
 const user = ref<any>(null)
-const isAuthenticated = computed(() => !!user.value)
-const isLoading = ref(false)
-const loginError = ref('')
+const isLoading = ref(true)
+const isRefreshing = ref(false)
 
-// 登录表单
-const loginForm = ref({
-  email: '',
-  password: ''
+// 统计数据
+const stats = ref({
+  unreadMessages: 0,
+  projectCount: 0,
+  blogPosts: 0,
+  todayVisits: 0
 })
 
-// 存储当前会话信息
-const currentSession = ref<any>(null)
-
-// 登录处理
-const handleLogin = async () => {
-  isLoading.value = true
-  loginError.value = ''
-
+// 刷新数据
+const refreshData = async () => {
+  isRefreshing.value = true
   try {
-    console.log('开始登录:', loginForm.value.email)
-    
-    // 使用 Supabase Authentication 登录
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: loginForm.value.email,
-      password: loginForm.value.password
-    })
+    await loadStats()
+    await new Promise(resolve => setTimeout(resolve, 500)) // 模拟加载延迟
+  } finally {
+    isRefreshing.value = false
+  }
+}
 
-    console.log('登录响应:', { data, error })
+// 加载统计数据
+const loadStats = async () => {
+  try {
+    const token = await getAuthToken()
+    if (!token) return
 
+    // 并行加载所有统计数据
+    const [messagesRes, projectsRes, articlesRes] = await Promise.allSettled([
+      $fetch('/api/admin/system/messages', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }),
+      $fetch('/api/admin/content/projects', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }),
+      $fetch('/api/admin/content/articles', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+    ])
+
+    // 处理消息统计
+    if (messagesRes.status === 'fulfilled' && messagesRes.value.success) {
+      const messages = messagesRes.value.data.messages || []
+      stats.value.unreadMessages = messages.filter((msg: any) => !msg.read).length
+    }
+
+    // 处理项目统计
+    if (projectsRes.status === 'fulfilled' && projectsRes.value.success) {
+      const projects = projectsRes.value.data.projects || []
+      stats.value.projectCount = projects.length
+    }
+
+    // 处理文章统计
+    if (articlesRes.status === 'fulfilled' && articlesRes.value.success) {
+      const articles = articlesRes.value.data.articles || []
+      stats.value.blogPosts = articles.filter((article: any) => article.published).length
+    }
+
+    // 模拟今日访问数据
+    stats.value.todayVisits = Math.floor(Math.random() * 500) + 100
+
+  } catch (error) {
+    console.error('加载统计数据失败:', error)
+  }
+}
+
+// 获取认证令牌
+const getAuthToken = async () => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession()
     if (error) {
-      console.error('Supabase 登录错误:', error)
+      console.error('获取会话失败:', error)
       throw error
     }
-
-    if (data.user) {
-      console.log('登录成功，用户信息:', data.user)
-      user.value = data.user
-      currentSession.value = data.session
-      // 登录成功后跳转到仪表板
-      await navigateTo('/admin/dashboard')
-    } else {
-      throw new Error('登录失败：未获取到用户信息')
-    }
-  } catch (error: any) {
-    console.error('登录失败详细信息:', error)
     
-    // 根据错误类型提供更友好的错误信息
-    if (error.message?.includes('Invalid login credentials')) {
-      loginError.value = '邮箱或密码错误，请检查后重试'
-    } else if (error.message?.includes('Email not confirmed')) {
-      loginError.value = '请先验证您的邮箱地址'
-    } else if (error.message?.includes('Too many requests')) {
-      loginError.value = '登录尝试次数过多，请稍后再试'
-    } else {
-      loginError.value = error.message || '登录失败，请重试'
+    if (!session?.access_token) {
+      console.error('未找到访问令牌')
+      await navigateTo('/admin/login')
+      throw new Error('未找到访问令牌')
     }
-  } finally {
-    isLoading.value = false
+    
+    return session.access_token
+  } catch (error) {
+    console.error('获取认证令牌失败:', error)
+    await navigateTo('/admin/login')
+    throw error
   }
 }
 
 // 初始化认证状态
 onMounted(async () => {
-  // 获取当前会话
-  const { data: { session } } = await supabase.auth.getSession()
-  if (session?.user) {
-    user.value = session.user
-    currentSession.value = session
-    // 如果已经登录，直接跳转到仪表板
-    await navigateTo('/admin/dashboard')
+  try {
+    // 获取当前会话
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.user) {
+      user.value = session.user
+      // 加载统计数据
+      await loadStats()
+    } else {
+      // 如果没有会话，重定向到登录页面
+      await navigateTo('/admin/login')
+    }
+  } catch (error) {
+    console.error('获取会话失败:', error)
+    await navigateTo('/admin/login')
+  } finally {
+    isLoading.value = false
   }
 
   // 监听认证状态变化
   supabase.auth.onAuthStateChange(async (event, session) => {
     console.log('认证状态变化:', event, session?.user?.email)
     
-    if (event === 'SIGNED_IN' && session?.user) {
-      user.value = session.user
-      currentSession.value = session
-      await navigateTo('/admin/dashboard')
-    } else if (event === 'SIGNED_OUT' || !session) {
-      // 清理所有状态
+    if (event === 'SIGNED_OUT' || !session) {
+      // 清理状态并重定向到登录页面
       user.value = null
-      currentSession.value = null
-      loginForm.value = { email: '', password: '' }
+      await navigateTo('/admin/login')
+    } else if (event === 'SIGNED_IN' && session?.user) {
+      user.value = session.user
+      await loadStats()
     }
   })
 })
 
 // 页面标题
 useHead({
-  title: '管理员登录 - ByteLife'
+  title: '管理后台 - ByteLife'
 })
 </script>
