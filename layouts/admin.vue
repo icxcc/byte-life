@@ -9,20 +9,20 @@
     </div>
 
     <!-- 管理员仪表板 -->
-    <div v-else-if="isAuthenticated" class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div v-else-if="isAuthenticated" class="flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
       <!-- 侧边栏 -->
-      <div class="w-64 bg-white dark:bg-gray-800 shadow-lg">
-        <div class="p-6">
+      <div class="w-64 bg-white dark:bg-gray-800 shadow-lg flex-shrink-0 flex flex-col">
+        <div class="p-6 flex-shrink-0">
           <h1 class="text-xl font-bold text-gray-900 dark:text-white">管理后台</h1>
         </div>
-        <nav class="mt-6">
+        <nav class="flex-1 overflow-y-auto">
           <div class="px-6 py-3">
             <NuxtLink
               v-for="item in menuItems"
               :key="item.key"
               :to="item.to"
               :class="[
-                'w-full text-left px-4 py-2 rounded-lg mb-2 transition-colors block',
+                'w-full text-left px-4 py-2 rounded-lg mb-2 transition-colors block no-underline',
                 $route.path === item.to
                   ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
                   : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
@@ -32,7 +32,7 @@
               {{ item.label }}
             </NuxtLink>
           </div>
-          <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700">
+          <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
             <button
               @click="handleLogout"
               class="w-full text-left px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
@@ -45,10 +45,22 @@
       </div>
 
       <!-- 主内容区域 -->
-      <div class="flex-1 overflow-hidden">
-        <div class="p-8">
-          <slot />
-        </div>
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- 顶部导航栏 -->
+        <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div class="px-6 py-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ getPageTitle() }}
+            </h2>
+          </div>
+        </header>
+        
+        <!-- 主内容 -->
+        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+          <div class="p-6">
+            <slot />
+          </div>
+        </main>
       </div>
     </div>
   </div>
@@ -73,6 +85,19 @@ const menuItems = [
 
 // 存储当前会话信息
 const currentSession = ref<any>(null)
+
+// 获取当前页面标题
+const getPageTitle = () => {
+  const route = useRoute()
+  const titleMap: Record<string, string> = {
+    '/admin/dashboard': '仪表板',
+    '/admin/content/articles': '文章管理',
+    '/admin/content/projects': '项目管理',
+    '/admin/system/messages': '消息管理',
+    '/admin/settings': '系统设置'
+  }
+  return titleMap[route.path] || '管理后台'
+}
 
 // 退出登录
 const handleLogout = async () => {
