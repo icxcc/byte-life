@@ -267,10 +267,8 @@ const insertMarkdown = (before: string, after: string) => {
 const saveArticle = async () => {
   saving.value = true
   try {
-    // 这里应该调用 API 保存文章
-    await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟 API 调用
+    // 触发父组件的保存方法
     emit('save', form.value)
-    closeModal()
   } catch (error) {
     console.error('保存文章失败:', error)
   } finally {
