@@ -109,25 +109,43 @@ const handleLogin = async () => {
   loginError.value = ''
 
   try {
+    console.log('开始登录:', loginForm.value.email)
+    
     // 使用 Supabase Authentication 登录
     const { data, error } = await supabase.auth.signInWithPassword({
       email: loginForm.value.email,
       password: loginForm.value.password
     })
 
+    console.log('登录响应:', { data, error })
+
     if (error) {
+      console.error('Supabase 登录错误:', error)
       throw error
     }
 
     if (data.user) {
+      console.log('登录成功，用户信息:', data.user)
       user.value = data.user
       currentSession.value = data.session
       // 登录成功后跳转到仪表板
       await navigateTo('/admin/dashboard')
+    } else {
+      throw new Error('登录失败：未获取到用户信息')
     }
   } catch (error: any) {
-    loginError.value = error.message || '邮箱或密码错误'
-    console.error('登录失败:', error)
+    console.error('登录失败详细信息:', error)
+    
+    // 根据错误类型提供更友好的错误信息
+    if (error.message?.includes('Invalid login credentials')) {
+      loginError.value = '邮箱或密码错误，请检查后重试'
+    } else if (error.message?.includes('Email not confirmed')) {
+      loginError.value = '请先验证您的邮箱地址'
+    } else if (error.message?.includes('Too many requests')) {
+      loginError.value = '登录尝试次数过多，请稍后再试'
+    } else {
+      loginError.value = error.message || '登录失败，请重试'
+    }
   } finally {
     isLoading.value = false
   }
