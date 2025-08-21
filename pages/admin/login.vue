@@ -40,6 +40,17 @@
           </div>
         </div>
 
+        <div class="flex items-center justify-between">
+          <div class="text-sm">
+            <NuxtLink
+              to="/admin/forgot-password"
+              class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+            >
+              忘记密码？
+            </NuxtLink>
+          </div>
+        </div>
+
         <div>
           <button
             type="submit"
