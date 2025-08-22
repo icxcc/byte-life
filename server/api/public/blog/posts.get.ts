@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   try {
     // 从 Supabase 获取已发布的博客文章
     const { data: articles, error } = await supabase
-      .from('blog_posts')
+      .from('articles')
       .select('*')
       .eq('status', '已发布')
       .order('published_at', { ascending: false })
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // 格式化为 posts 格式供前端使用
-    const posts = articles.map(article => ({
+    const posts = articles.map((article: any) => ({
       id: article.id,
       title: article.title,
       slug: article.slug,

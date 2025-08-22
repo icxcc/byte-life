@@ -22,6 +22,9 @@ alwaysApply: true
 - **数据库**: Supabase (PostgreSQL)
 - **图标**: Heroicons
 
+** 组件文档
+- **组件文档**: 通过context7 mcp查找
+
 ## 项目结构约定
 
 ### 目录结构

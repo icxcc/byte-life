@@ -16,7 +16,7 @@ export const useSEO = (options: {
   const seoTitle = computed(() => title || '字节生活 - 个人网站')
   const seoDescription = computed(() => description || '个人网站，展示作品、博客和在线互动功能')
   const seoImage = computed(() => image || '/images/og-image.jpg')
-  const seoUrl = computed(() => url || `${config.public.baseUrl}${route.path}`)
+  const seoUrl = computed(() => url || `${config.public.siteUrl}${route.path}`)
   
   useHead({
     title: seoTitle,

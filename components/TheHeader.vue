@@ -79,10 +79,43 @@ const toggleColorMode = () => {
 
 <style scoped>
 .nav-link {
-  @apply text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium transition-colors duration-200;
+  color: rgb(55 65 81);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: rgb(37 99 235);
+}
+
+.dark .nav-link {
+  color: rgb(209 213 219);
+}
+
+.dark .nav-link:hover {
+  color: rgb(96 165 250);
 }
 
 .nav-link-mobile {
-  @apply block py-2 px-4 text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md;
+  display: block;
+  padding: 0.5rem 1rem;
+  color: rgb(55 65 81);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 0.375rem;
+}
+
+.nav-link-mobile:hover {
+  color: rgb(37 99 235);
+  background-color: rgb(243 244 246);
+}
+
+.dark .nav-link-mobile {
+  color: rgb(209 213 219);
+}
+
+.dark .nav-link-mobile:hover {
+  color: rgb(96 165 250);
+  background-color: rgb(55 65 81);
 }
 </style>

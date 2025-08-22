@@ -1,62 +1,49 @@
-export interface NotificationOptions {
-  title?: string
-  message: string
-  type?: 'success' | 'error' | 'warning' | 'info'
-  duration?: number
-}
-
+// 使用 Nuxt UI 的 Toast 系统
 export const useNotification = () => {
-  const notifications = ref<Array<NotificationOptions & { id: string }>>([])
-
-  const show = (options: NotificationOptions) => {
-    const id = Date.now().toString()
-    const notification = {
-      id,
-      type: 'info' as const,
-      duration: 3000,
-      ...options
-    }
-    
-    notifications.value.push(notification)
-    
-    // 自动移除通知
-    setTimeout(() => {
-      remove(id)
-    }, notification.duration)
-    
-    return id
-  }
-
-  const remove = (id: string) => {
-    const index = notifications.value.findIndex(n => n.id === id)
-    if (index > -1) {
-      notifications.value.splice(index, 1)
-    }
-  }
+  const toast = useToast()
 
   const success = (message: string, title?: string) => {
-    return show({ message, title, type: 'success' })
+    toast.add({
+      title: title || '成功',
+      description: message,
+      color: 'green',
+      icon: 'i-heroicons-check-circle'
+    })
   }
 
   const error = (message: string, title?: string) => {
-    return show({ message, title, type: 'error', duration: 5000 })
+    toast.add({
+      title: title || '错误',
+      description: message,
+      color: 'red',
+      icon: 'i-heroicons-x-circle'
+    })
   }
 
   const warning = (message: string, title?: string) => {
-    return show({ message, title, type: 'warning' })
+    toast.add({
+      title: title || '警告',
+      description: message,
+      color: 'yellow',
+      icon: 'i-heroicons-exclamation-triangle'
+    })
   }
 
   const info = (message: string, title?: string) => {
-    return show({ message, title, type: 'info' })
+    toast.add({
+      title: title || '信息',
+      description: message,
+      color: 'blue',
+      icon: 'i-heroicons-information-circle'
+    })
   }
 
   return {
-    notifications: readonly(notifications),
-    show,
-    remove,
     success,
     error,
     warning,
-    info
+    info,
+    // 直接暴露 toast 实例以便更灵活的使用
+    toast
   }
 }

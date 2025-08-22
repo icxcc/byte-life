@@ -138,7 +138,7 @@
         <UiButton
           type="button"
           @click="closeModal"
-          variant="outline"
+          variant="ghost"
         >
           取消
         </UiButton>

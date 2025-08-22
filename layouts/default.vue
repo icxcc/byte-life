@@ -23,7 +23,7 @@ const { isDark } = useTheme()
 
 // 监听主题变化并应用到 body
 watchEffect(() => {
-  if (process.client) {
+  if (import.meta.client) {
     document.body.classList.toggle('dark', isDark.value)
   }
 })

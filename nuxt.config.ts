@@ -23,19 +23,20 @@ export default defineNuxtConfig({
   ssr: true,
 
   modules: [
+    '@nuxt/ui',
+    '@nuxtjs/color-mode',
     '@nuxt/content',
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxt/test-utils',
-    '@nuxtjs/color-mode',
     '@nuxt/icon'
   ],
 
-  // 颜色模式配置
+  // Color Mode 配置
   colorMode: {
-    preference: 'system',
-    fallback: 'light',
+    preference: 'system', // 默认主题
+    fallback: 'light', // 回退主题
     hid: 'nuxt-color-mode-script',
     globalName: '__NUXT_COLOR_MODE__',
     componentName: 'ColorScheme',
@@ -45,15 +46,16 @@ export default defineNuxtConfig({
   },
 
   css: [
-    './assets/css/tailwind.css'
+    '@fontsource/inter/400.css',
+    '@fontsource/inter/500.css',
+    '@fontsource/inter/600.css',
+    '@fontsource/inter/700.css',
+    '@fontsource/noto-sans-sc/400.css',
+    '@fontsource/noto-sans-sc/500.css',
+    '@fontsource/noto-sans-sc/600.css',
+    '@fontsource/noto-sans-sc/700.css',
+    '~/assets/css/main.css'
   ],
-
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
 
   // 优化的应用配置
   app: {
@@ -65,23 +67,26 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: '个人网站，展示作品、博客和在线互动功能' },
         { name: 'format-detection', content: 'telephone=no' },
-        { name: 'msapplication-TileColor', content: '#0ea5e9' },
-        { name: 'theme-color', content: '#0ea5e9' }
+        { name: 'msapplication-TileColor', content: '#6366f1' },
+        { name: 'theme-color', content: '#6366f1' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'manifest', href: '/site.webmanifest' }
       ]
     },
-    // 页面过渡配置 - 仅对前端页面启用
-    pageTransition: false,
-    layoutTransition: false
+    // 页面过渡配置
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' }
   },
 
   // 性能优化
   nitro: {
     compressPublicAssets: true,
-    minify: true
+    minify: true,
+    experimental: {
+      wasm: true
+    }
   },
 
   // 图片优化配置
@@ -95,12 +100,41 @@ export default defineNuxtConfig({
       lg: 1024,
       xl: 1280,
       xxl: 1536
+    },
+    providers: {
+      default: {
+        provider: 'ipx'
+      }
     }
   },
 
   // TypeScript 配置
   typescript: {
     strict: true,
-    typeCheck: false // 暂时禁用以避免 vue-tsc 问题
+    typeCheck: false // 在开发时禁用以提高性能
+  },
+
+  // 运行时配置
+  runtimeConfig: {
+    // 私有配置（仅在服务端可用）
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    
+    // 公共配置（客户端和服务端都可用）
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+      siteUrl: process.env.SITE_URL || 'http://localhost:3000'
+    }
+  },
+
+  // 构建优化
+  build: {
+    transpile: ['@nuxt/ui']
+  },
+
+  // 开发服务器配置
+  devServer: {
+    port: 3000,
+    host: '0.0.0.0'
   }
 })

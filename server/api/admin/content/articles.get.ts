@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
 
     // 从 Supabase 获取文章数据
     const { data: articles, error } = await supabase
-      .from('blog_posts')
+      .from('articles')
       .select('*')
       .order('created_at', { ascending: false })
 
@@ -41,13 +41,13 @@ export default defineEventHandler(async (event) => {
     // 统计数据
     const stats = {
       total: articles.length,
-      published: articles.filter(a => a.status === '已发布').length,
-      draft: articles.filter(a => a.status === '草稿').length,
-      featured: articles.filter(a => a.featured).length
+      published: articles.filter((a: any) => a.status === '已发布').length,
+      draft: articles.filter((a: any) => a.status === '草稿').length,
+      featured: articles.filter((a: any) => a.featured).length
     }
 
     // 格式化文章数据
-    const formattedArticles = articles.map(article => ({
+    const formattedArticles = articles.map((article: any) => ({
       id: article.id,
       title: article.title,
       slug: article.slug,
@@ -74,7 +74,7 @@ export default defineEventHandler(async (event) => {
       }
     }
   } catch (error) {
-    if (error.statusCode) {
+    if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error
     }
     

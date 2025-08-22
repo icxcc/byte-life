@@ -1,20 +1,71 @@
 <template>
-  <div>
+  <div class="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- 英雄区域 -->
-    <section class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
-      <div class="container-custom">
-        <div class="max-w-3xl mx-auto text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-6">欢迎来到字节生活</h1>
-          <p class="text-xl mb-8">个人网站，展示作品、博客和在线互动功能</p>
-          <div class="flex flex-wrap justify-center gap-4">
-            <NuxtLink to="/projects" class="btn bg-white text-primary-700 hover:bg-gray-100">
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <!-- 装饰性背景元素 -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-20 animate-pulse"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-green-400 to-blue-400 rounded-full opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-10 animate-pulse" style="animation-delay: 4s;"></div>
+      </div>
+      
+      <UContainer class="relative z-10">
+        <div class="text-center max-w-4xl mx-auto">
+          <UBadge 
+            color="primary" 
+            variant="soft" 
+            size="lg" 
+            class="mb-6 animate-bounce"
+          >
+            ✨ 欢迎来到我的数字世界
+          </UBadge>
+          
+          <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent animate-fade-in">
+            字节生活
+          </h1>
+          
+          <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed animate-slide-up">
+            探索技术的无限可能，用代码创造美好体验 🚀
+          </p>
+          
+          <div class="flex flex-wrap justify-center gap-4 mb-12 animate-slide-up" style="animation-delay: 0.2s;">
+            <UButton 
+              to="/projects" 
+              size="xl" 
+              color="primary" 
+              variant="solid"
+              icon="i-heroicons-rocket-launch"
+              class="shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            >
               查看作品
-            </NuxtLink>
-            <NuxtLink to="/blog" class="btn bg-transparent border-2 border-white hover:bg-white hover:text-primary-700">
+            </UButton>
+            <UButton 
+              to="/blog" 
+              size="xl" 
+              color="white" 
+              variant="solid"
+              icon="i-heroicons-book-open"
+              class="shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            >
               阅读博客
-            </NuxtLink>
+            </UButton>
+          </div>
+          
+          <!-- 技能标签云 -->
+          <div class="flex flex-wrap justify-center gap-3 mb-12 animate-fade-in" style="animation-delay: 0.4s;">
+            <UBadge color="blue" variant="soft">Vue.js</UBadge>
+            <UBadge color="green" variant="soft">Nuxt.js</UBadge>
+            <UBadge color="purple" variant="soft">TypeScript</UBadge>
+            <UBadge color="pink" variant="soft">Tailwind CSS</UBadge>
+            <UBadge color="orange" variant="soft">Node.js</UBadge>
+            <UBadge color="cyan" variant="soft">Supabase</UBadge>
           </div>
         </div>
+      </UContainer>
+      
+      <!-- 滚动指示器 -->
+      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <UIcon name="i-heroicons-chevron-down" class="w-6 h-6 text-gray-400" />
       </div>
     </section>
 

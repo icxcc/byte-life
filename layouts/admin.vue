@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
     <!-- 未认证时重定向到登录页面 -->
-    <div v-if="!isAuthenticated && !isLoading" class="flex items-center justify-center min-h-screen">
+    <div v-if="!isAuthenticated && !isLoading" class="flex items-center justify-center h-full">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
         <p class="text-gray-600 dark:text-gray-400">正在验证身份...</p>
@@ -9,12 +9,12 @@
     </div>
 
     <!-- 管理员仪表板 -->
-    <div v-else-if="isAuthenticated" class="admin-layout flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
+    <div v-else-if="isAuthenticated" class="admin-layout flex h-full bg-gray-100 dark:bg-gray-900">
       <!-- 侧边栏 -->
       <AdminSidebar @logout="handleLogout" />
 
       <!-- 主内容区域 -->
-      <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="flex-1 flex flex-col">
         <!-- 顶部导航栏 -->
         <AdminTopNav @logout="handleLogout" />
         
@@ -31,9 +31,6 @@
       </div>
     </div>
   </div>
-  
-  <!-- 全局通知 -->
-  <UiNotification />
 </template>
 
 <script setup lang="ts">

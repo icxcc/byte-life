@@ -1,36 +1,184 @@
-/* 前端页面过渡动画 - 仅在 default 布局中使用 */
-.frontend-page-enter-active,
-.frontend-page-leave-active {
+/* 页面过渡动画 */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 布局过渡动画 */
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.2s ease-in-out;
+}
+
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+
+/* 组件过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 滑动过渡动画 */
+.slide-enter-active,
+.slide-leave-active {
   transition: all 0.3s ease-in-out;
 }
 
-.frontend-page-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
+.slide-enter-from {
+  transform: translateX(-100%);
 }
 
-.frontend-page-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
+.slide-leave-to {
+  transform: translateX(100%);
 }
 
-/* 禁用管理后台的 View Transitions API */
-.admin-layout ::view-transition-old(root),
-.admin-layout ::view-transition-new(root) {
-  animation: none !important;
+/* 缩放过渡动画 */
+.scale-enter-active,
+.scale-leave-active {
+  transition: all 0.2s ease-in-out;
+}
+
+.scale-enter-from,
+.scale-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
 }
 
 /* 加载动画 */
-.loading-spinner {
-  @apply inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full animate-spin;
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* 卡片悬停效果 */
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
-/* 按钮动画 */
-.btn-animate {
-  @apply transition-all duration-200 active:scale-95;
+/* 脉冲动画 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 弹跳动画 */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* 渐入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 渐入延迟动画 */
+.animate-fade-in-delay-100 {
+  animation: fadeIn 0.5s ease-out 0.1s both;
+}
+
+.animate-fade-in-delay-200 {
+  animation: fadeIn 0.5s ease-out 0.2s both;
+}
+
+.animate-fade-in-delay-300 {
+  animation: fadeIn 0.5s ease-out 0.3s both;
+}
+
+/* 滑入动画 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.6s ease-out;
+}
+
+/* 滑入左侧动画 */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+/* 滑入右侧动画 */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out;
 }
