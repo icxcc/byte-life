@@ -1,6 +1,3 @@
-/**
- * 主题管理组合式函数 - 利用 Nuxt 4.0 的响应式特性
- */
 export const useTheme = () => {
   const colorMode = useColorMode()
   
