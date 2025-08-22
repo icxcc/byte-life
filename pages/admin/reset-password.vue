@@ -77,11 +77,11 @@
 </template>
 
 <script setup lang="ts">
-import { supabase } from '~/lib/supabase'
-
 definePageMeta({
+  requiresAuth: false,
   layout: false
 })
+import { supabase } from '~/lib/supabase'
 
 const password = ref('')
 const confirmPassword = ref('')

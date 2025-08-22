@@ -224,7 +224,7 @@ const downloadResume = async () => {
   
   try {
     // 调用API获取简历数据
-    const resumeData = await $fetch('/api/resume')
+    const { data: resumeData } = await usePublicApi('/resume').get()
     
     // 创建下载链接
     const blob = new Blob([JSON.stringify(resumeData, null, 2)], { 

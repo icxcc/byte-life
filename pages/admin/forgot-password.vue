@@ -55,11 +55,11 @@
 </template>
 
 <script setup lang="ts">
-import { supabase } from '~/lib/supabase'
-
 definePageMeta({
+  requiresAuth: false,
   layout: false
 })
+import { supabase } from '~/lib/supabase'
 
 const email = ref('')
 const loading = ref(false)

@@ -80,10 +80,8 @@ const createAdmin = async () => {
   success.value = false
 
   try {
-    const response = await $fetch('/api/admin/register', {
-      method: 'POST',
-      body: form.value
-    })
+    const { post } = useAdminApi('/register')
+    const response = await post(form.value)
 
     if (response.success) {
       success.value = true

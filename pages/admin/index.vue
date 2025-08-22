@@ -38,10 +38,14 @@ const loadStats = async () => {
 
     console.log('开始加载统计数据...')
     const token = session.access_token
+    const { get: getMessages } = useAdminApi('/system/messages')
+    const { get: getProjects } = useAdminApi('/content/projects')
+    const { get: getArticles } = useAdminApi('/content/articles')
+    
     const [messagesRes, projectsRes, articlesRes] = await Promise.allSettled([
-      $fetch('/api/admin/system/messages', { headers: { 'Authorization': `Bearer ${token}` } }),
-      $fetch('/api/admin/content/projects', { headers: { 'Authorization': `Bearer ${token}` } }),
-      $fetch('/api/admin/content/articles', { headers: { 'Authorization': `Bearer ${token}` } })
+      getMessages(),
+      getProjects(),
+      getArticles()
     ])
 
     console.log('API 响应:', { messagesRes, projectsRes, articlesRes })

@@ -37,7 +37,7 @@
               </div>
               <button
                 v-if="closable"
-                @click="$emit('update:modelValue', false)"
+                @click="handleClose"
                 class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <Icon name="heroicons:x-mark" class="w-6 h-6" />
@@ -77,6 +77,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'close': []
 }>()
 
 const modalClasses = computed(() => {
@@ -92,9 +93,14 @@ const modalClasses = computed(() => {
   return [baseClasses, sizeClasses[props.size]].join(' ')
 })
 
+const handleClose = () => {
+  emit('update:modelValue', false)
+  emit('close')
+}
+
 const handleBackdropClick = () => {
   if (props.closeOnBackdrop) {
-    emit('update:modelValue', false)
+    handleClose()
   }
 }
 
@@ -102,7 +108,7 @@ const handleBackdropClick = () => {
 onMounted(() => {
   const handleEscape = (event: KeyboardEvent) => {
     if (event.key === 'Escape' && props.modelValue && props.closable) {
-      emit('update:modelValue', false)
+      handleClose()
     }
   }
   

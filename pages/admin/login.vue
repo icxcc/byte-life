@@ -86,12 +86,11 @@
 </template>
 
 <script setup lang="ts">
-import { supabase } from '~/lib/supabase'
-
-// 页面元数据
 definePageMeta({
+  requiresAuth: false,
   layout: false
 })
+import { supabase } from '~/lib/supabase'
 
 // 响应式数据
 const loginForm = ref({

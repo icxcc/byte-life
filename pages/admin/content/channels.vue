@@ -17,25 +17,25 @@
 
     <!-- 统计卡片 -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <StatsCard
+      <AdminStatsCard
         title="总栏目数"
         :value="stats.total"
         icon="heroicons:tag"
         color="blue"
       />
-      <StatsCard
+      <AdminStatsCard
         title="启用栏目"
         :value="stats.active"
         icon="heroicons:check-circle"
         color="green"
       />
-      <StatsCard
+      <AdminStatsCard
         title="禁用栏目"
         :value="stats.inactive"
         icon="heroicons:x-circle"
         color="red"
       />
-      <StatsCard
+      <AdminStatsCard
         title="子栏目数"
         :value="stats.children"
         icon="heroicons:folder-open"
@@ -153,7 +153,7 @@
 
     <!-- 创建/编辑栏目模态框 -->
     <UiModal
-      :show="showCreateModal || showEditModal"
+      v-model="showModal"
       :title="showCreateModal ? '新建栏目' : '编辑栏目'"
       @close="closeModal"
     >
@@ -279,6 +279,15 @@ const channelForm = ref<ChannelForm>({
 // 计算属性
 const filteredChannels = computed(() => searchChannels(searchQuery.value))
 const parentChannels = computed(() => getParentOptions(editingChannel.value?.id))
+const showModal = computed({
+  get: () => showCreateModal.value || showEditModal.value,
+  set: (value: boolean) => {
+    if (!value) {
+      showCreateModal.value = false
+      showEditModal.value = false
+    }
+  }
+})
 
 // 方法
 const handleCreateChannel = async (): Promise<void> => {

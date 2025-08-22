@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-const { data: projects } = await $fetch('/api/public/projects')
+const { data: projects } = await usePublicApi('/projects').get()
 
 useSEO({
   title: '我的项目',

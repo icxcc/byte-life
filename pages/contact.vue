@@ -223,10 +223,8 @@ const submitForm = async () => {
 
   try {
     // 调用API提交表单
-    const response = await $fetch('/api/public/contact', {
-      method: 'POST',
-      body: form.value
-    })
+    const { post } = usePublicApi('/contact')
+    const response = await post(formData.value)
 
     submitMessage.value = response.message || '消息发送成功！我会尽快回复您。'
     submitType.value = 'success'
