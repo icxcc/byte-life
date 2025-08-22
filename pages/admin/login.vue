@@ -1,87 +1,106 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-          管理员登录
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          请使用管理员账号登录
-        </p>
-      </div>
-      
-      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="email" class="sr-only">邮箱地址</label>
-            <input
-              id="email"
-              v-model="loginForm.email"
-              name="email"
-              type="email"
-              autocomplete="email"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="邮箱地址"
-            />
-          </div>
-          <div>
-            <label for="password" class="sr-only">密码</label>
-            <input
-              id="password"
-              v-model="loginForm.password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="密码"
-            />
-          </div>
-        </div>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <!-- 装饰性背景 -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full opacity-10 animate-pulse"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-10 animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
 
-        <div class="flex items-center justify-between">
-          <div class="text-sm">
-            <NuxtLink
-              to="/admin/forgot-password"
-              class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
-            >
-              忘记密码？
-            </NuxtLink>
-          </div>
-        </div>
-
-        <div>
-          <button
-            type="submit"
-            :disabled="isLoading"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <span v-if="isLoading" class="absolute left-0 inset-y-0 flex items-center pl-3">
-              <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-            </span>
-            {{ isLoading ? '登录中...' : '登录' }}
-          </button>
-        </div>
-
-        <!-- 错误提示 -->
-        <div v-if="errorMessage" class="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <Icon name="heroicons:x-circle" class="h-5 w-5 text-red-400" />
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
-                登录失败
-              </h3>
-              <div class="mt-2 text-sm text-red-700 dark:text-red-300">
-                {{ errorMessage }}
+    <UContainer class="relative z-10">
+      <div class="max-w-md mx-auto">
+        <UCard class="shadow-2xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+          <template #header>
+            <div class="text-center space-y-4">
+              <div class="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <UIcon name="i-heroicons-shield-check" class="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                  管理员登录
+                </h2>
+                <p class="mt-2 text-gray-600 dark:text-gray-400">
+                  请使用管理员账号登录后台系统
+                </p>
               </div>
             </div>
-          </div>
-        </div>
-      </form>
-    </div>
+          </template>
+
+          <UForm :state="loginForm" @submit="handleLogin" class="space-y-6">
+            <UFormGroup label="邮箱地址" name="email" required>
+              <UInput
+                v-model="loginForm.email"
+                type="email"
+                placeholder="请输入邮箱地址"
+                icon="i-heroicons-envelope"
+                size="lg"
+                :disabled="isLoading"
+              />
+            </UFormGroup>
+
+            <UFormGroup label="密码" name="password" required>
+              <UInput
+                v-model="loginForm.password"
+                type="password"
+                placeholder="请输入密码"
+                icon="i-heroicons-lock-closed"
+                size="lg"
+                :disabled="isLoading"
+              />
+            </UFormGroup>
+
+            <div class="flex items-center justify-end">
+              <UButton
+                to="/admin/forgot-password"
+                variant="ghost"
+                color="primary"
+                size="sm"
+                :padded="false"
+              >
+                忘记密码？
+              </UButton>
+            </div>
+
+            <UButton
+              type="submit"
+              color="primary"
+              size="lg"
+              block
+              :loading="isLoading"
+              :disabled="!loginForm.email || !loginForm.password"
+              icon="i-heroicons-arrow-right-on-rectangle"
+            >
+              {{ isLoading ? '登录中...' : '登录' }}
+            </UButton>
+
+            <UAlert
+              v-if="errorMessage"
+              color="error"
+              variant="soft"
+              :title="'登录失败'"
+              :description="errorMessage"
+              icon="i-heroicons-exclamation-triangle"
+            />
+          </UForm>
+
+          <template #footer>
+            <div class="text-center">
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                还没有账号？
+                <UButton
+                  to="/admin/register"
+                  variant="ghost"
+                  color="primary"
+                  size="sm"
+                  :padded="false"
+                >
+                  立即注册
+                </UButton>
+              </p>
+            </div>
+          </template>
+        </UCard>
+      </div>
+    </UContainer>
   </div>
 </template>
 

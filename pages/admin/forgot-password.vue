@@ -1,56 +1,105 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-    <div class="max-w-md w-full space-y-8 p-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-          找回密码
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          请输入您的邮箱，我们将发送重置密码链接
-        </p>
-      </div>
-      
-      <form class="mt-8 space-y-6" @submit.prevent="handleResetPassword">
-        <div class="rounded-md shadow-sm">
-          <div>
-            <label for="email" class="sr-only">邮箱</label>
-            <input
-              id="email"
-              v-model="email"
-              name="email"
-              type="email"
-              required
-              class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              placeholder="邮箱地址"
-            >
-          </div>
-        </div>
-
-        <div v-if="message" :class="[
-          'text-sm text-center',
-          success ? 'text-green-600' : 'text-red-600'
-        ]">
-          {{ message }}
-        </div>
-
-        <div>
-          <button
-            type="submit"
-            :disabled="loading"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-          >
-            <span v-if="loading">发送中...</span>
-            <span v-else>发送重置链接</span>
-          </button>
-        </div>
-        
-        <div class="text-center">
-          <NuxtLink to="/admin" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-            返回登录
-          </NuxtLink>
-        </div>
-      </form>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <!-- 装饰性背景 -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full opacity-10 animate-pulse"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full opacity-10 animate-pulse" style="animation-delay: 2s;"></div>
     </div>
+
+    <UContainer class="relative z-10">
+      <div class="max-w-md mx-auto">
+        <UCard class="shadow-2xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+          <template #header>
+            <div class="text-center space-y-4">
+              <div class="mx-auto w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <UIcon name="i-heroicons-key" class="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                  找回密码
+                </h2>
+                <p class="mt-2 text-gray-600 dark:text-gray-400">
+                  请输入您的邮箱，我们将发送重置密码链接
+                </p>
+              </div>
+            </div>
+          </template>
+
+          <UForm :state="{ email }" @submit="handleResetPassword" class="space-y-6">
+            <UFormGroup label="邮箱地址" name="email" required>
+              <UInput
+                v-model="email"
+                type="email"
+                placeholder="请输入注册时使用的邮箱"
+                icon="i-heroicons-envelope"
+                size="lg"
+                :disabled="loading"
+              />
+            </UFormGroup>
+
+            <UButton
+              type="submit"
+              color="primary"
+              size="lg"
+              block
+              :loading="loading"
+              :disabled="!email || loading"
+              icon="i-heroicons-paper-airplane"
+            >
+              {{ loading ? '发送中...' : '发送重置链接' }}
+            </UButton>
+
+            <UAlert
+              v-if="message"
+              :color="success ? 'green' : 'red'"
+              variant="soft"
+              :title="success ? '发送成功' : '发送失败'"
+              :description="message"
+              :icon="success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
+            />
+
+            <!-- 提示信息 -->
+            <UAlert
+              v-if="!message"
+              color="blue"
+              variant="soft"
+              title="温馨提示"
+              description="重置链接将发送到您的邮箱，请注意查收垃圾邮件文件夹"
+              icon="i-heroicons-information-circle"
+            />
+          </UForm>
+
+          <template #footer>
+            <div class="text-center space-y-2">
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                想起密码了？
+                <UButton
+                  to="/admin"
+                  variant="ghost"
+                  color="primary"
+                  size="sm"
+                  :padded="false"
+                >
+                  返回登录
+                </UButton>
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                还没有账号？
+                <UButton
+                  to="/admin/register"
+                  variant="ghost"
+                  color="primary"
+                  size="sm"
+                  :padded="false"
+                >
+                  立即注册
+                </UButton>
+              </p>
+            </div>
+          </template>
+        </UCard>
+      </div>
+    </UContainer>
   </div>
 </template>
 

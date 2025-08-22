@@ -1,82 +1,114 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-    <div class="max-w-md w-full space-y-8 p-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-          管理员注册
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          创建管理员账户以访问后台管理系统
-        </p>
-      </div>
-      
-      <form class="mt-8 space-y-6" @submit.prevent="handleRegister">
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="email" class="sr-only">邮箱</label>
-            <input
-              id="email"
-              v-model="registerForm.email"
-              name="email"
-              type="email"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              placeholder="邮箱地址"
-            >
-          </div>
-          <div>
-            <label for="password" class="sr-only">密码</label>
-            <input
-              id="password"
-              v-model="registerForm.password"
-              name="password"
-              type="password"
-              required
-              minlength="6"
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              placeholder="密码（至少6位）"
-            >
-          </div>
-          <div>
-            <label for="confirmPassword" class="sr-only">确认密码</label>
-            <input
-              id="confirmPassword"
-              v-model="registerForm.confirmPassword"
-              name="confirmPassword"
-              type="password"
-              required
-              minlength="6"
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              placeholder="确认密码"
-            >
-          </div>
-        </div>
-
-        <div v-if="message" :class="[
-          'text-sm text-center',
-          success ? 'text-green-600' : 'text-red-600'
-        ]">
-          {{ message }}
-        </div>
-
-        <div>
-          <button
-            type="submit"
-            :disabled="loading || registerForm.password !== registerForm.confirmPassword || registerForm.password.length < 6"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-          >
-            <span v-if="loading">注册中...</span>
-            <span v-else>注册</span>
-          </button>
-        </div>
-        
-        <div class="text-center">
-          <NuxtLink to="/admin" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-            已有账户？返回登录
-          </NuxtLink>
-        </div>
-      </form>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <!-- 装饰性背景 -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full opacity-10 animate-pulse"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-teal-400 to-cyan-400 rounded-full opacity-10 animate-pulse" style="animation-delay: 2s;"></div>
     </div>
+
+    <UContainer class="relative z-10">
+      <div class="max-w-md mx-auto">
+        <UCard class="shadow-2xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+          <template #header>
+            <div class="text-center space-y-4">
+              <div class="mx-auto w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <UIcon name="i-heroicons-user-plus" class="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                  管理员注册
+                </h2>
+                <p class="mt-2 text-gray-600 dark:text-gray-400">
+                  创建管理员账户以访问后台管理系统
+                </p>
+              </div>
+            </div>
+          </template>
+
+          <UForm :state="registerForm" @submit="handleRegister" class="space-y-6">
+            <UFormGroup label="邮箱地址" name="email" required>
+              <UInput
+                v-model="registerForm.email"
+                type="email"
+                placeholder="请输入邮箱地址"
+                icon="i-heroicons-envelope"
+                size="lg"
+                :disabled="loading"
+              />
+            </UFormGroup>
+
+            <UFormGroup label="密码" name="password" required>
+              <UInput
+                v-model="registerForm.password"
+                type="password"
+                placeholder="请输入密码（至少6位）"
+                icon="i-heroicons-lock-closed"
+                size="lg"
+                :disabled="loading"
+              />
+            </UFormGroup>
+
+            <UFormGroup label="确认密码" name="confirmPassword" required>
+              <UInput
+                v-model="registerForm.confirmPassword"
+                type="password"
+                placeholder="请再次输入密码"
+                icon="i-heroicons-lock-closed"
+                size="lg"
+                :disabled="loading"
+                :color="passwordsMatch ? 'primary' : 'red'"
+              />
+              <template #hint>
+                <span v-if="registerForm.confirmPassword && !passwordsMatch" class="text-red-500 text-sm">
+                  两次输入的密码不一致
+                </span>
+                <span v-else-if="registerForm.password && registerForm.password.length < 6" class="text-red-500 text-sm">
+                  密码长度至少为6位
+                </span>
+              </template>
+            </UFormGroup>
+
+            <UButton
+              type="submit"
+              color="primary"
+              size="lg"
+              block
+              :loading="loading"
+              :disabled="!canSubmit"
+              icon="i-heroicons-user-plus"
+            >
+              {{ loading ? '注册中...' : '创建账户' }}
+            </UButton>
+
+            <UAlert
+              v-if="message"
+              :color="success ? 'green' : 'red'"
+              variant="soft"
+              :title="success ? '注册成功' : '注册失败'"
+              :description="message"
+              :icon="success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
+            />
+          </UForm>
+
+          <template #footer>
+            <div class="text-center">
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                已有账户？
+                <UButton
+                  to="/admin"
+                  variant="ghost"
+                  color="primary"
+                  size="sm"
+                  :padded="false"
+                >
+                  立即登录
+                </UButton>
+              </p>
+            </div>
+          </template>
+        </UCard>
+      </div>
+    </UContainer>
   </div>
 </template>
 
@@ -97,18 +129,21 @@ const loading = ref(false)
 const message = ref('')
 const success = ref(false)
 
-const handleRegister = async () => {
-  if (registerForm.value.password !== registerForm.value.confirmPassword) {
-    message.value = '两次输入的密码不一致'
-    success.value = false
-    return
-  }
+// 计算属性
+const passwordsMatch = computed(() => {
+  if (!registerForm.value.confirmPassword) return true
+  return registerForm.value.password === registerForm.value.confirmPassword
+})
 
-  if (registerForm.value.password.length < 6) {
-    message.value = '密码长度至少为6位'
-    success.value = false
-    return
-  }
+const canSubmit = computed(() => {
+  return registerForm.value.email && 
+         registerForm.value.password.length >= 6 && 
+         passwordsMatch.value && 
+         !loading.value
+})
+
+const handleRegister = async () => {
+  if (!canSubmit.value) return
 
   loading.value = true
   message.value = ''
@@ -132,7 +167,7 @@ const handleRegister = async () => {
 
     if (data.user) {
       success.value = true
-      message.value = '注册成功！请检查您的邮箱以验证账户。'
+      message.value = '注册成功！请检查您的邮箱以验证账户，然后返回登录。'
       
       // 清空表单
       registerForm.value = {
@@ -148,7 +183,13 @@ const handleRegister = async () => {
     }
   } catch (error: any) {
     success.value = false
-    message.value = error.message || '注册失败，请重试'
+    const errorMessages: Record<string, string> = {
+      'User already registered': '该邮箱已被注册',
+      'Invalid email': '邮箱格式不正确',
+      'Password should be at least 6 characters': '密码长度至少为6位',
+      'Signup is disabled': '注册功能已禁用'
+    }
+    message.value = errorMessages[error.message] || error.message || '注册失败，请重试'
     console.error('注册失败:', error)
   } finally {
     loading.value = false
