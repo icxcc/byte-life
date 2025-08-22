@@ -1,47 +1,46 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center">
-        <div :class="['p-3 rounded-lg', iconClass]">
-          <Icon :name="icon" class="w-6 h-6" />
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ title }}</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ value }}</p>
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div :class="[
+          'w-8 h-8 rounded-md flex items-center justify-center',
+          colorClasses[color]
+        ]">
+          <Icon :name="icon" class="w-5 h-5 text-white" />
         </div>
       </div>
-      <div v-if="change" class="text-right">
-        <div :class="[
-          'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-          changeType === 'increase' 
-            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
-            : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-        ]">
-          <Icon 
-            :name="changeType === 'increase' ? 'heroicons:arrow-trending-up' : 'heroicons:arrow-trending-down'" 
-            class="w-3 h-3 mr-1" 
-          />
-          {{ change }}
-        </div>
+      <div class="ml-5 w-0 flex-1">
+        <dl>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+            {{ title }}
+          </dt>
+          <dd class="text-lg font-medium text-gray-900 dark:text-white">
+            {{ value }}
+          </dd>
+        </dl>
       </div>
     </div>
-    <p v-if="description" class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ description }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
 interface Props {
   title: string
-  value: number | string
+  value: string | number
   icon: string
-  iconClass?: string
-  change?: string
-  changeType?: 'increase' | 'decrease'
-  description?: string
+  color?: 'blue' | 'green' | 'red' | 'purple' | 'yellow' | 'indigo'
 }
 
-withDefaults(defineProps<Props>(), {
-  iconClass: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400',
-  changeType: 'increase'
+const props = withDefaults(defineProps<Props>(), {
+  color: 'blue'
 })
+
+const colorClasses = {
+  blue: 'bg-blue-500',
+  green: 'bg-green-500',
+  red: 'bg-red-500',
+  purple: 'bg-purple-500',
+  yellow: 'bg-yellow-500',
+  indigo: 'bg-indigo-500'
+}
 </script>

@@ -5,21 +5,117 @@
     </div>
     <nav class="flex-1 overflow-y-auto custom-scrollbar">
       <div class="px-6 py-3">
+        <!-- 仪表板 -->
         <NuxtLink
-          v-for="item in menuItems"
-          :key="item.key"
-          :to="item.to"
+          to="/admin"
           :class="[
             'menu-item w-full text-left px-4 py-2 rounded-lg mb-2 block no-underline',
-            $route.path === item.to
+            route.path === '/admin'
               ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
               : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
           ]"
         >
-          <Icon :name="item.icon" class="inline-block w-5 h-5 mr-3" />
-          {{ item.label }}
+          <Icon name="heroicons:home" class="inline-block w-5 h-5 mr-3" />
+          仪表板
         </NuxtLink>
+
+        <!-- 内容管理 -->
+        <div class="mb-2">
+          <button
+            @click="toggleSubmenu('content')"
+            :class="[
+              'menu-item w-full text-left px-4 py-2 rounded-lg flex items-center justify-between',
+              isContentActive
+                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
+                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+            ]"
+          >
+            <div class="flex items-center">
+              <Icon name="heroicons:document-duplicate" class="inline-block w-5 h-5 mr-3" />
+              内容管理
+            </div>
+            <Icon 
+              :name="expandedMenus.content ? 'heroicons:chevron-down' : 'heroicons:chevron-right'" 
+              class="w-4 h-4" 
+            />
+          </button>
+          <div v-show="expandedMenus.content" class="ml-4 mt-1">
+            <NuxtLink
+              to="/admin/content/channels"
+              :class="[
+                'menu-item w-full text-left px-4 py-2 rounded-lg mb-1 block no-underline text-sm',
+                route.path === '/admin/content/channels'
+                  ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400'
+                  : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50'
+              ]"
+            >
+              <Icon name="heroicons:tag" class="inline-block w-4 h-4 mr-2" />
+              栏目管理
+            </NuxtLink>
+            <NuxtLink
+              to="/admin/content/articles"
+              :class="[
+                'menu-item w-full text-left px-4 py-2 rounded-lg mb-1 block no-underline text-sm',
+                route.path === '/admin/content/articles'
+                  ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400'
+                  : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50'
+              ]"
+            >
+              <Icon name="heroicons:document-text" class="inline-block w-4 h-4 mr-2" />
+              文章管理
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- 系统管理 -->
+        <div class="mb-2">
+          <button
+            @click="toggleSubmenu('system')"
+            :class="[
+              'menu-item w-full text-left px-4 py-2 rounded-lg flex items-center justify-between',
+              isSystemActive
+                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
+                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+            ]"
+          >
+            <div class="flex items-center">
+              <Icon name="heroicons:cog-6-tooth" class="inline-block w-5 h-5 mr-3" />
+              系统管理
+            </div>
+            <Icon 
+              :name="expandedMenus.system ? 'heroicons:chevron-down' : 'heroicons:chevron-right'" 
+              class="w-4 h-4" 
+            />
+          </button>
+          <div v-show="expandedMenus.system" class="ml-4 mt-1">
+            <NuxtLink
+              to="/admin/system/messages"
+              :class="[
+                'menu-item w-full text-left px-4 py-2 rounded-lg mb-1 block no-underline text-sm',
+                route.path === '/admin/system/messages'
+                  ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400'
+                  : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50'
+              ]"
+            >
+              <Icon name="heroicons:envelope" class="inline-block w-4 h-4 mr-2" />
+              消息管理
+            </NuxtLink>
+            <NuxtLink
+              to="/admin/settings"
+              :class="[
+                'menu-item w-full text-left px-4 py-2 rounded-lg mb-1 block no-underline text-sm',
+                route.path === '/admin/settings'
+                  ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400'
+                  : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50'
+              ]"
+            >
+              <Icon name="heroicons:adjustments-horizontal" class="inline-block w-4 h-4 mr-2" />
+              系统设置
+            </NuxtLink>
+          </div>
+        </div>
       </div>
+      
       <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
         <button
           @click="$emit('logout')"
@@ -39,14 +135,37 @@ defineEmits<{
   logout: []
 }>()
 
-// 菜单项
-const menuItems = [
-  { key: 'dashboard', label: '仪表板', icon: 'heroicons:home', to: '/admin' },
-  { key: 'messages', label: '消息管理', icon: 'heroicons:envelope', to: '/admin/system/messages' },
-  { key: 'projects', label: '项目管理', icon: 'heroicons:folder', to: '/admin/content/projects' },
-  { key: 'blog', label: '博客管理', icon: 'heroicons:document-text', to: '/admin/content/articles' },
-  { key: 'settings', label: '系统设置', icon: 'heroicons:cog-6-tooth', to: '/admin/settings' }
-]
+// 获取路由信息
+const route = useRoute()
+
+// 响应式数据
+const expandedMenus = ref({
+  content: false,
+  system: false
+})
+
+// 计算属性：判断当前路由是否在对应模块下
+const isContentActive = computed(() => {
+  return route.path.startsWith('/admin/content')
+})
+
+const isSystemActive = computed(() => {
+  return route.path.startsWith('/admin/system') || route.path === '/admin/settings'
+})
+
+// 切换子菜单展开状态
+const toggleSubmenu = (menu: 'content' | 'system') => {
+  expandedMenus.value[menu] = !expandedMenus.value[menu]
+}
+
+// 监听路由变化，自动展开对应的菜单
+watch(() => route.path, (newPath) => {
+  if (newPath.startsWith('/admin/content')) {
+    expandedMenus.value.content = true
+  } else if (newPath.startsWith('/admin/system') || newPath === '/admin/settings') {
+    expandedMenus.value.system = true
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

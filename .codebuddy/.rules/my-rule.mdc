@@ -1,9 +1,176 @@
 ---
-description: 
+description: *.js,*.css,*.scss,*.ts,*.vue
 globs:
+alwaysApply: false
+---
+  - "**/*.js"
+  - "**/*.css"
+  - "**/*.scss"
+  - "nuxt.config.ts"
+  - "tailwind.config.js"
 alwaysApply: true
 ---
-# my-rule
 
-这是一个规则文件，用于帮助 AI 理解您的代码库和遵循项目约定。
-1. 前端用pnpm
+# ByteLife 前端开发规范
+
+## 技术栈
+- **包管理器**: pnpm
+- **框架**: Vue 3 + Nuxt 4.0
+- **语言**: TypeScript
+- **构建工具**: Vite
+- **样式**: TailwindCSS 3.4.17
+- **数据库**: Supabase (PostgreSQL)
+- **图标**: Heroicons
+
+## 项目结构约定
+
+### 目录结构
+```
+├── components/          # 组件目录
+│   ├── admin/           # 管理后台组件
+│   └── common/          # 通用组件
+├── pages/               # 页面路由
+│   ├── admin/           # 管理后台页面
+│   ├── blog/            # 博客页面
+├── layouts/             # 布局组件
+├── middleware/          # 中间件
+├── composables/         # 组合式函数
+├── server/api/          # 服务端API
+│   ├── admin/           # 管理后台API
+│   └── public/          # 公开API
+├── lib/                 # 工具库
+└── assets/              # 静态资源
+```
+
+## 编码规范
+
+### Vue 组件规范
+1. **组件命名**: 使用 PascalCase
+2. **文件结构**: 使用 `<script setup>` 语法
+3. **Props 定义**: 使用 TypeScript 接口定义
+4. **事件定义**: 使用 `defineEmits` 明确定义事件类型
+
+```vue
+<template>
+  <!-- 模板内容 -->
+</template>
+
+<script setup lang="ts">
+// 接口定义
+interface Props {
+  title: string
+  count?: number
+}
+
+// Props 和 Emits
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  update: [value: string]
+}>()
+
+// 响应式数据
+const loading = ref(false)
+
+// 计算属性
+const formattedTitle = computed(() => props.title.toUpperCase())
+
+// 方法
+const handleClick = () => {
+  emit('update', 'new value')
+}
+</script>
+```
+
+### TypeScript 规范
+1. **类型定义**: 优先使用 interface 而非 type
+2. **导入顺序**: Vue相关 → 第三方库 → 本地模块
+3. **变量命名**: 使用 camelCase
+4. **常量命名**: 使用 UPPER_SNAKE_CASE
+
+### API 规范
+1. **路由命名**: 使用 RESTful 风格
+   - GET `/api/admin/content/channels` - 获取列表
+   - POST `/api/admin/content/channels` - 创建
+   - PATCH `/api/admin/content/channels/[id]` - 更新
+   - DELETE `/api/admin/content/channels/[id]` - 删除
+
+2. **响应格式**: 统一使用以下格式
+```typescript
+// 成功响应
+{
+  success: true,
+  data: any,
+  message?: string
+}
+
+// 错误响应
+{
+  success: false,
+  error: string,
+  statusCode: number
+}
+```
+
+### 样式规范
+1. **CSS 框架**: 优先使用 TailwindCSS 类名
+2. **自定义样式**: 仅在必要时使用 `<style scoped>`
+3. **响应式设计**: 移动优先，使用 Tailwind 响应式前缀
+4. **暗色模式**: 使用 `dark:` 前缀支持暗色主题
+
+### 数据库规范
+1. **表命名**: 使用复数形式，如 `channels`, `articles`
+2. **字段命名**: 使用 snake_case，如 `created_at`, `is_active`
+3. **主键**: 使用 UUID 类型
+4. **时间戳**: 统一使用 `created_at`, `updated_at`
+
+## 组件设计原则
+
+### 通用组件
+1. **StatsCard**: 统计卡片组件
+   - Props: title, value, icon, color
+   - 支持多种颜色主题
+
+2. **LoadingSpinner**: 加载组件
+   - Props: text (可选)
+   - 统一的加载动画样式
+
+### 管理后台组件
+1. **Sidebar**: 侧边栏导航
+   - 支持多级菜单
+   - 自动展开当前路由对应的菜单
+
+2. **TopNav**: 顶部导航栏
+   - 用户信息显示
+   - 退出登录功能
+
+## 状态管理
+1. **本地状态**: 使用 `ref()` 和 `reactive()`
+2. **跨组件状态**: 使用 `provide/inject` 或 Pinia
+3. **服务端状态**: 使用 `$fetch` 进行数据获取
+
+## 错误处理
+1. **API 错误**: 统一使用 `createError` 抛出错误
+2. **客户端错误**: 使用 try-catch 包装异步操作
+3. **用户提示**: 使用 console.error 记录错误日志
+
+## 性能优化
+1. **懒加载**: 大型组件使用 `defineAsyncComponent`
+2. **图片优化**: 使用 Nuxt Image 组件
+3. **代码分割**: 按页面自动分割代码
+4. **缓存策略**: API 响应适当使用缓存
+
+## 安全规范
+1. **认证**: 所有管理后台 API 需要 Bearer Token 认证
+2. **权限控制**: 使用中间件验证用户权限
+3. **数据验证**: 服务端和客户端双重验证
+4. **敏感信息**: 使用环境变量存储密钥
+
+## Git 提交规范
+使用 Conventional Commits 格式：
+- `feat:` 新功能
+- `fix:` 修复bug
+- `docs:` 文档更新
+- `style:` 代码格式调整
+- `refactor:` 代码重构
+- `test:` 测试相关
+- `chore:` 构建工具或辅助工具的变动

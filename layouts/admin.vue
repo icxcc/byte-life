@@ -21,8 +21,8 @@
         <!-- 主内容 -->
         <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 custom-scrollbar">
           <div class="content-container p-6">
-            <!-- 移除页面过渡动画，管理后台使用简洁的切换 -->
-            <NuxtPage />
+            <!-- 使用 slot 接收页面内容，符合 Nuxt 4 布局规范 -->
+            <slot />
           </div>
         </main>
 
@@ -31,6 +31,9 @@
       </div>
     </div>
   </div>
+  
+  <!-- 全局通知 -->
+  <UiNotification />
 </template>
 
 <script setup lang="ts">
