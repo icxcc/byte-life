@@ -80,6 +80,99 @@ export interface ApiResponse<T = any> {
   data: T
   message?: string
   error?: string
+  statusCode?: number
+}
+
+// 分页响应类型
+export interface PaginatedResponse<T> extends ApiResponse {
+  data: {
+    items: T[]
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+}
+
+// 统计响应类型
+export interface StatsResponse<T> extends ApiResponse {
+  data: {
+    items: T[]
+    stats: {
+      total: number
+      active: number
+      inactive: number
+      children: number
+      published: number
+      draft: number
+      featured: number
+      [key: string]: number
+    }
+  }
+}
+
+// 单条数据响应类型
+export interface SingleResponse<T> extends ApiResponse {
+  data: T
+}
+
+// 具体API端点响应类型
+// 栏目相关响应
+export interface ChannelsResponse extends StatsResponse<Channel> {}
+
+export interface ChannelResponse extends SingleResponse<Channel> {}
+
+// 文章相关响应
+export interface ArticlesResponse extends StatsResponse<Article> {}
+
+export interface ArticleResponse extends SingleResponse<Article> {}
+
+// 联系人相关响应
+export interface ContactsResponse extends StatsResponse<Contact> {}
+
+export interface ContactResponse extends SingleResponse<Contact> {}
+
+// 博客相关响应
+export interface BlogPostsResponse extends ApiResponse {
+  data: Article[]
+}
+
+// 项目相关响应
+export interface ProjectsResponse extends ApiResponse {
+  data: Project[]
+}
+
+// 项目类型
+export interface Project extends BaseEntity {
+  title: string
+  description: string
+  tech: string[]
+  status: 'active' | 'completed' | 'archived'
+  category: string
+  github?: string
+  demo?: string
+  image?: string
+  featured: boolean
+}
+
+// 错误响应类型
+export interface ErrorResponse {
+  success: false
+  error: string
+  statusCode: number
+  message?: string
+  details?: ValidationError[]
+}
+
+// 认证响应类型
+export interface AuthResponse extends ApiResponse {
+  data: {
+    user: AdminUser
+    token: string
+    expiresIn: number
+  }
 }
 
 // 栏目API响应类型

@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-- **前端框架**: Vue 3 + Nuxt.js 4.0
+- **前端框架**: Vue 3 + Nuxt.js 4.0 + Nuxt UI 3.3.2
 - **构建工具**: Vite
 - **CSS框架**: Tailwind CSS
 - **后端服务**: Supabase (认证、数据库、存储)
