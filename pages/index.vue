@@ -230,20 +230,6 @@
       </div>
     </section>
 
-    <!-- 联系区域 -->
-    <section class="py-16 bg-gray-50 dark:bg-gray-800">
-      <div class="container-custom">
-        <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">联系我</h2>
-          <p class="text-xl mb-8 text-gray-600 dark:text-gray-400">
-            有任何问题或合作意向？请随时联系我。
-          </p>
-          <NuxtLink to="/contact" class="btn btn-primary">
-            发送消息
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
   </div>
 </template>
 
