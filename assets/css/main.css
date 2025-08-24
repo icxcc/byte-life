@@ -5,9 +5,12 @@
 @import './transitions.css';
 
 /* 基础样式 */
-html, body {
-  height: 100%;
-  overflow: hidden;
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 body {

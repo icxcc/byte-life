@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+  <div class="bg-white dark:bg-gray-900 transition-colors duration-300">
     <TheHeader />
     <main>
       <!-- 前端页面过渡动画 -->
