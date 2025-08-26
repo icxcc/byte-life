@@ -15,7 +15,7 @@ alwaysApply: true
 
 ## 技术栈
 - **包管理器**: pnpm
-- **框架**: Vue 3 + Nuxt 4.0
+- **框架**: Vue 3 + Nuxt 4.0 + Nuxt UI 3.3.2
 - **语言**: TypeScript
 - **构建工具**: Vite
 - **样式**: TailwindCSS 3.4.17
