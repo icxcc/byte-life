@@ -10,9 +10,17 @@
         <!-- 导航链接 - 桌面版 -->
         <div class="hidden md:flex items-center space-x-8">
           <NuxtLink to="/" class="nav-link">首页</NuxtLink>
-          <NuxtLink to="/about" class="nav-link">关于</NuxtLink>
-          <NuxtLink to="/projects" class="nav-link">作品</NuxtLink>
-          <NuxtLink to="/blog" class="nav-link">博客</NuxtLink>
+          <template v-if="!loading">
+            <NuxtLink 
+              v-for="channel in topLevelChannels" 
+              :key="channel.id"
+              :to="`/${channel.slug}`" 
+              class="nav-link"
+              
+            >
+              {{ channel.name }}
+            </NuxtLink>
+          </template>
           <NuxtLink to="/contact" class="nav-link">联系</NuxtLink>
         </div>
 
@@ -71,6 +79,9 @@ import { useColorMode } from '#imports';
 
 const colorMode = useColorMode();
 const isMenuOpen = ref(false);
+
+// 使用公共channels接口
+const { topLevelChannels, loading } = usePublicChannels();
 
 const toggleColorMode = () => {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';
