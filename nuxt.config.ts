@@ -67,8 +67,11 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: '个人网站，展示作品、博客和在线互动功能' },
         { name: 'format-detection', content: 'telephone=no' },
-        { name: 'msapplication-TileColor', content: '#6366f1' },
-        { name: 'theme-color', content: '#6366f1' }
+        { name: 'msapplication-TileColor', content: '#ffffff' },
+        { name: 'theme-color', content: '#ffffff' },
+        { name: 'theme-color', content: '#111827', media: '(prefers-color-scheme: dark)' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

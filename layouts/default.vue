@@ -26,6 +26,12 @@ watchEffect(() => {
   if (import.meta.client) {
     document.documentElement.classList.toggle('dark', isDark.value)
     document.body.classList.toggle('dark', isDark.value)
+    
+    // 动态更新 iOS 状态栏颜色
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]')
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute('content', isDark.value ? '#111827' : '#ffffff')
+    }
   }
 })
 
