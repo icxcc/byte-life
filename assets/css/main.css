@@ -7,21 +7,41 @@
 /* 基础样式 */
 html {
   overflow-x: hidden;
+  /* 修复移动端下拉刷新背景色 */
+  background-color: white;
+  transition: background-color 0.3s ease;
+}
+
+html.dark {
+  background-color: rgb(17 24 39);
 }
 
 body {
   overflow-x: hidden;
-}
-
-body {
   background-color: white;
   color: rgb(31 41 55);
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* 确保移动端下拉刷新时背景色正确 */
+  min-height: 100vh;
 }
 
 body.dark {
   background-color: rgb(17 24 39);
   color: rgb(229 231 235);
+}
+
+/* 移动端下拉刷新优化 */
+@media (max-width: 768px) {
+  html {
+    /* 防止移动端下拉刷新显示默认颜色 */
+    overscroll-behavior-y: contain;
+  }
+  
+  body {
+    /* 确保移动端背景色覆盖整个视口 */
+    min-height: 100vh;
+    min-height: 100dvh; /* 动态视口高度 */
+  }
 }
 
 /* 优化滚动条样式 */

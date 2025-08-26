@@ -21,9 +21,10 @@
 // 使用 Nuxt 4.0 的新特性
 const { isDark } = useTheme()
 
-// 监听主题变化并应用到 body
+// 监听主题变化并应用到 html 和 body
 watchEffect(() => {
   if (import.meta.client) {
+    document.documentElement.classList.toggle('dark', isDark.value)
     document.body.classList.toggle('dark', isDark.value)
   }
 })
