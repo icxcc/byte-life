@@ -14,12 +14,12 @@
       <AdminSidebar @logout="handleLogout" />
 
       <!-- 主内容区域 -->
-      <div class="flex-1 flex flex-col">
+      <div class="flex-1 flex flex-col min-h-0">
         <!-- 顶部导航栏 -->
         <AdminTopNav @logout="handleLogout" />
         
         <!-- 主内容 -->
-        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 custom-scrollbar">
+        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 custom-scrollbar min-h-0">
           <div class="content-container p-6">
             <!-- 使用 slot 接收页面内容，符合 Nuxt 4 布局规范 -->
             <slot />

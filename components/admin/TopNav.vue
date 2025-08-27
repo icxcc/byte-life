@@ -24,14 +24,15 @@
 
         <!-- 通知消息 -->
         <UPopover :popper="{ placement: 'bottom-end' }">
-          <UButton
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            icon="i-heroicons-bell"
-            square
-            title="通知消息"
-          >
+          <div class="relative">
+            <UButton
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              icon="i-heroicons-bell"
+              square
+              title="通知消息"
+            />
             <UBadge
               v-if="unreadCount > 0"
               :label="unreadCount > 99 ? '99+' : unreadCount.toString()"
@@ -40,7 +41,7 @@
               size="xs"
               class="absolute -top-1 -right-1"
             />
-          </UButton>
+          </div>
 
           <template #panel>
             <UCard class="w-80 max-w-sm">
