@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+  <div class="h-screen bg-gray-50 dark:bg-gray-900">
     <!-- 未认证时重定向到登录页面 -->
     <div v-if="!isAuthenticated && !isLoading" class="flex items-center justify-center h-full">
       <div class="text-center">
@@ -14,12 +14,12 @@
       <AdminSidebar @logout="handleLogout" />
 
       <!-- 主内容区域 -->
-      <div class="flex-1 flex flex-col min-h-0">
+      <div class="flex-1 flex flex-col h-full overflow-hidden">
         <!-- 顶部导航栏 -->
         <AdminTopNav @logout="handleLogout" />
         
         <!-- 主内容 -->
-        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 custom-scrollbar min-h-0">
+        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 custom-scrollbar">
           <div class="content-container p-6">
             <!-- 使用 slot 接收页面内容，符合 Nuxt 4 布局规范 -->
             <slot />
