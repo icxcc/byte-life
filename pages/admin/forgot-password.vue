@@ -137,9 +137,13 @@ const handleResetPassword = async () => {
   success.value = false
 
   try {
+    // 获取当前域名作为回调地址
+    const { $config } = useNuxtApp()
+    const baseUrl = process.client ? window.location.origin : ($config.public.siteUrl || 'http://localhost:3000')
+    
     // 使用 Supabase Authentication 的密码重置功能
     const { error } = await supabase.auth.resetPasswordForEmail(email.value, {
-      redirectTo: `${window.location.origin}/admin/reset-password`
+      redirectTo: `${baseUrl}/admin/reset-password`
     })
 
     if (error) {

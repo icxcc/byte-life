@@ -166,11 +166,16 @@ const handleRegister = async () => {
   success.value = false
 
   try {
+    // 获取当前域名作为回调地址
+    const { $config } = useNuxtApp()
+    const baseUrl = process.client ? window.location.origin : ($config.public.siteUrl || 'http://localhost:3000')
+    
     // 使用 Supabase Authentication 注册
     const { data, error } = await supabase.auth.signUp({
       email: registerForm.value.email,
       password: registerForm.value.password,
       options: {
+        emailRedirectTo: `${baseUrl}/admin/auth/callback`,
         data: {
           role: 'admin' // 设置用户角色为管理员
         }
