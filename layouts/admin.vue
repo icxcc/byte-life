@@ -11,7 +11,7 @@
     <!-- 管理员仪表板 -->
     <div v-else-if="isAuthenticated" class="admin-layout flex h-full bg-gray-100 dark:bg-gray-900">
       <!-- 侧边栏 -->
-      <AdminSidebar @logout="handleLogout" />
+      <AdminSidebar/>
 
       <!-- 主内容区域 -->
       <div class="flex-1 flex flex-col h-full overflow-hidden">
@@ -44,35 +44,49 @@ const isLoading = ref(true)
 // 存储当前会话信息
 const currentSession = ref<any>(null)
 
+// 退出登录状态
+const isLoggingOut = ref(false)
+
 // 退出登录
 const handleLogout = async () => {
-  console.log('开始退出登录...')
+  if (isLoggingOut.value) return // 防止重复点击
+  
+  isLoggingOut.value = true
+  
   try {
-    // 使用 Supabase 退出登录
-    console.log('调用 Supabase signOut...')
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error('Supabase 退出登录失败:', error)
-      throw error
-    }
+    console.log('开始退出登录...')
     
-    console.log('Supabase 退出成功，清理本地状态...')
-    // 清理本地状态
+    // 先清理本地状态，确保UI立即响应
     user.value = null
     currentSession.value = null
     
-    // 跳转到登录页面
-    console.log('跳转到登录页面...')
-    await navigateTo('/admin')
+    // 使用 Supabase 退出登录（设置超时）
+    const logoutPromise = supabase.auth.signOut()
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('退出登录超时')), 5000)
+    )
+    
+    try {
+      const { error } = await Promise.race([logoutPromise, timeoutPromise]) as any
+      if (error) {
+        console.warn('Supabase 退出登录失败:', error)
+        // 不抛出错误，继续执行跳转
+      }
+    } catch (timeoutError) {
+      console.warn('退出登录超时，强制跳转:', timeoutError)
+      // 超时也不阻塞，继续执行跳转
+    }
+    
+    // 强制跳转到登录页面
+    await navigateTo('/admin', { replace: true })
     
     console.log('退出登录完成')
   } catch (error) {
     console.error('退出登录过程中出错:', error)
-    // 即使 Supabase 退出失败，也要清理本地状态
-    user.value = null
-    currentSession.value = null
-    console.log('强制跳转到登录页面...')
-    await navigateTo('/admin')
+    // 无论如何都要跳转到登录页面
+    await navigateTo('/admin', { replace: true })
+  } finally {
+    isLoggingOut.value = false
   }
 }
 
@@ -124,7 +138,11 @@ provide('auth', {
 /* 管理员布局根容器 - 强制覆盖全局样式 */
 .admin-layout-root {
   overflow: hidden !important;
-  height: 100vh !important;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* 侧边栏菜单项简洁过渡 */
@@ -160,17 +178,21 @@ provide('auth', {
   overflow-y: auto !important;
   overflow-x: hidden !important;
 }
-
-/* 确保交互元素可以正常工作 */
-.admin-layout :deep(.dropdown),
-.admin-layout :deep(.popover),
-.admin-layout :deep([data-headlessui-state]) {
-  z-index: 9999 !important;
-  position: relative !important;
-}
 </style>
 
 <!-- 全局样式 - 确保在生产环境中生效 -->
+<style>
+/* 当admin布局激活时，禁用body滚动 */
+body:has(.admin-layout-root) {
+  overflow: hidden !important;
+}
+
+/* 兼容性处理 */
+.admin-layout-root ~ * {
+  overflow: hidden;
+}
+</style>
+��生产环境中生效 -->
 <style>
 /* 当admin布局激活时，禁用body滚动 */
 body:has(.admin-layout-root) {

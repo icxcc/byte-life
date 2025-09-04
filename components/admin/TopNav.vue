@@ -146,6 +146,24 @@ const emit = defineEmits<{
   logout: []
 }>()
 
+// 退出登录状态
+const isLoggingOut = ref(false)
+
+// 处理退出登录
+const handleLogout = async () => {
+  if (isLoggingOut.value) return
+  
+  isLoggingOut.value = true
+  try {
+    emit('logout')
+  } finally {
+    // 延迟重置状态，避免闪烁
+    setTimeout(() => {
+      isLoggingOut.value = false
+    }, 2000)
+  }
+}
+
 // 响应式数据
 const notifications = ref([
   {
@@ -172,18 +190,19 @@ const currentUser = ref({ email: 'admin@bytelife.com' })
 const { isDark, toggleTheme } = useTheme()
 
 // 用户菜单项
-const userMenuItems = [
+const userMenuItems = computed(() => [
   [{
     label: '个人设置',
     icon: 'i-heroicons-cog-6-tooth',
     to: '/admin/settings'
   }],
   [{
-    label: '退出登录',
-    icon: 'i-heroicons-arrow-right-on-rectangle',
-    click: () => emit('logout')
+    label: isLoggingOut.value ? '正在退出...' : '退出登录',
+    icon: isLoggingOut.value ? 'i-heroicons-arrow-path' : 'i-heroicons-arrow-right-on-rectangle',
+    click: handleLogout,
+    disabled: isLoggingOut.value
   }]
-]
+])
 
 // 获取当前页面标题
 const getPageTitle = () => {
