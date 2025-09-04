@@ -172,8 +172,7 @@ import { supabase } from '~/lib/supabase'
 
 // 页面元数据配置
 definePageMeta({ 
-  layout: 'admin',
-  middleware: 'auth'
+  layout: 'admin'
 })
 
 const stats = ref({

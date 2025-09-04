@@ -57,7 +57,7 @@
               <UButton
                 v-if="!isSuccess"
                 to="/admin/register"
-                color="gray"
+                color="neutral"
                 variant="ghost"
                 size="lg"
                 block
