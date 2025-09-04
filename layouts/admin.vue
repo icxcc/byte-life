@@ -124,6 +124,7 @@ provide('auth', {
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 0;
 }
 
 /* 侧边栏菜单项简洁过渡 */
@@ -159,6 +160,14 @@ provide('auth', {
   overflow-y: auto !important;
   overflow-x: hidden !important;
 }
+
+/* 确保交互元素可以正常工作 */
+.admin-layout :deep(.dropdown),
+.admin-layout :deep(.popover),
+.admin-layout :deep([data-headlessui-state]) {
+  z-index: 9999 !important;
+  position: relative !important;
+}
 </style>
 
 <!-- 全局样式 - 确保在生产环境中生效 -->
@@ -168,8 +177,13 @@ body:has(.admin-layout-root) {
   overflow: hidden !important;
 }
 
-/* 兼容性处理 */
-.admin-layout-root ~ * {
-  overflow: hidden;
+/* 确保dropdown和popover在最上层 */
+[data-headlessui-portal] {
+  z-index: 9999 !important;
+}
+
+/* Nuxt UI组件的z-index修复 */
+.fixed[data-headlessui-portal] {
+  z-index: 9999 !important;
 }
 </style>
