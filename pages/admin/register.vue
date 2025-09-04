@@ -168,7 +168,7 @@ const handleRegister = async () => {
   try {
     // 获取当前域名作为回调地址
     const { $config } = useNuxtApp()
-    const baseUrl = process.client ? window.location.origin : ($config.public.siteUrl || 'http://localhost:3000')
+    const baseUrl = import.meta.client ? window.location.origin : ($config.public.siteUrl || 'http://localhost:3000')
     
     // 使用 Supabase Authentication 注册
     const { data, error } = await supabase.auth.signUp({
