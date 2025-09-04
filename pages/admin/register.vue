@@ -105,7 +105,7 @@
           </UForm>
 
           <template #footer>
-            <div class="flex items-center justify-center pt-2 border-t">
+            <div class="flex items-center justify-center pt-2">
               <!-- 登录链接 -->
               <div class="text-sm text-gray-600 dark:text-gray-400">
                 已有账户？
