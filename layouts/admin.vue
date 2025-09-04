@@ -46,27 +46,32 @@ const currentSession = ref<any>(null)
 
 // 退出登录
 const handleLogout = async () => {
+  console.log('开始退出登录...')
   try {
     // 使用 Supabase 退出登录
+    console.log('调用 Supabase signOut...')
     const { error } = await supabase.auth.signOut()
     if (error) {
-      console.error('退出登录失败:', error)
+      console.error('Supabase 退出登录失败:', error)
       throw error
     }
     
+    console.log('Supabase 退出成功，清理本地状态...')
     // 清理本地状态
     user.value = null
     currentSession.value = null
     
     // 跳转到登录页面
+    console.log('跳转到登录页面...')
     await navigateTo('/admin')
     
-    console.log('退出登录成功')
+    console.log('退出登录完成')
   } catch (error) {
-    console.error('退出登录失败:', error)
+    console.error('退出登录过程中出错:', error)
     // 即使 Supabase 退出失败，也要清理本地状态
     user.value = null
     currentSession.value = null
+    console.log('强制跳转到登录页面...')
     await navigateTo('/admin')
   }
 }
@@ -119,12 +124,7 @@ provide('auth', {
 /* 管理员布局根容器 - 强制覆盖全局样式 */
 .admin-layout-root {
   overflow: hidden !important;
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
+  height: 100vh !important;
 }
 
 /* 侧边栏菜单项简洁过渡 */
