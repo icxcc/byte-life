@@ -25,9 +25,9 @@
             </div>
           </template>
 
-          <UForm :state="loginForm" @submit="handleLogin" class="space-y-6">
+          <UForm :state="loginForm" @submit="handleLogin" class="space-y-8">
             <!-- 表单输入区域 -->
-            <div class="space-y-5">
+            <div class="space-y-6">
               <UFormGroup label="邮箱地址" name="email" required>
                 <UInput
                   v-model="loginForm.email"
@@ -36,6 +36,7 @@
                   icon="i-heroicons-envelope"
                   size="lg"
                   :disabled="isLoading"
+                  class="h-12"
                 />
               </UFormGroup>
 
@@ -47,12 +48,13 @@
                   icon="i-heroicons-lock-closed"
                   size="lg"
                   :disabled="isLoading"
+                  class="h-12"
                 />
               </UFormGroup>
             </div>
 
             <!-- 忘记密码链接 -->
-            <div class="flex items-center justify-end pt-2">
+            <div class="flex items-center justify-end py-2">
               <UButton
                 to="/admin/forgot-password"
                 variant="ghost"
@@ -66,7 +68,7 @@
             </div>
 
             <!-- 登录按钮 -->
-            <div class="pt-4">
+            <div class="pt-6">
               <UButton
                 type="submit"
                 color="primary"
@@ -75,22 +77,22 @@
                 :loading="isLoading"
                 :disabled="!loginForm.email || !loginForm.password"
                 icon="i-heroicons-arrow-right-on-rectangle"
-                class="h-12 text-base font-medium"
+                class="h-14 text-base font-medium"
               >
                 {{ isLoading ? '登录中...' : '登录' }}
               </UButton>
             </div>
 
             <!-- 错误提示 -->
-            <UAlert
-              v-if="errorMessage"
-              color="error"
-              variant="soft"
-              :title="'登录失败'"
-              :description="errorMessage"
-              icon="i-heroicons-exclamation-triangle"
-              class="mt-4"
-            />
+            <div v-if="errorMessage" class="pt-4">
+              <UAlert
+                color="error"
+                variant="soft"
+                :title="'登录失败'"
+                :description="errorMessage"
+                icon="i-heroicons-exclamation-triangle"
+              />
+            </div>
           </UForm>
 
           <template #footer>

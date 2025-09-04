@@ -25,9 +25,9 @@
             </div>
           </template>
 
-          <UForm v-if="!resetComplete" :state="{ password, confirmPassword }" @submit="handleUpdatePassword" class="space-y-6">
+          <UForm v-if="!resetComplete" :state="{ password, confirmPassword }" @submit="handleUpdatePassword" class="space-y-8">
             <!-- 表单输入区域 -->
-            <div class="space-y-5">
+            <div class="space-y-6">
               <UFormGroup label="新密码" name="password" required>
                 <UInput
                   v-model="password"
@@ -36,6 +36,7 @@
                   icon="i-heroicons-lock-closed"
                   size="lg"
                   :disabled="loading"
+                  class="h-12"
                 />
               </UFormGroup>
 
@@ -48,9 +49,10 @@
                   size="lg"
                   :disabled="loading"
                   :color="passwordsMatch ? 'primary' : 'error'"
+                  class="h-12"
                 />
                 <template #hint>
-                  <div class="mt-2 min-h-[20px]">
+                  <div class="mt-3 min-h-[24px]">
                     <span v-if="confirmPassword && !passwordsMatch" class="text-red-500 text-sm">
                       两次输入的密码不一致
                     </span>
@@ -63,7 +65,7 @@
             </div>
 
             <!-- 更新按钮 -->
-            <div class="pt-4">
+            <div class="pt-8">
               <UButton
                 type="submit"
                 color="primary"
@@ -72,7 +74,7 @@
                 :loading="loading"
                 :disabled="!canSubmit"
                 icon="i-heroicons-check"
-                class="h-12 text-base font-medium"
+                class="h-14 text-base font-medium"
               >
                 {{ loading ? '更新中...' : '更新密码' }}
               </UButton>

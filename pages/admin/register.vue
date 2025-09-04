@@ -25,9 +25,9 @@
             </div>
           </template>
 
-          <UForm :state="registerForm" @submit="handleRegister" class="space-y-6">
+          <UForm :state="registerForm" @submit="handleRegister" class="space-y-8">
             <!-- 表单输入区域 -->
-            <div class="space-y-5">
+            <div class="space-y-6">
               <UFormGroup label="邮箱地址" name="email" required>
                 <UInput
                   v-model="registerForm.email"
@@ -36,6 +36,7 @@
                   icon="i-heroicons-envelope"
                   size="lg"
                   :disabled="loading"
+                  class="h-12"
                 />
               </UFormGroup>
 
@@ -47,6 +48,7 @@
                   icon="i-heroicons-lock-closed"
                   size="lg"
                   :disabled="loading"
+                  class="h-12"
                 />
               </UFormGroup>
 
@@ -59,9 +61,10 @@
                   size="lg"
                   :disabled="loading"
                   :color="passwordsMatch ? 'primary' : 'error'"
+                  class="h-12"
                 />
                 <template #hint>
-                  <div class="mt-2 min-h-[20px]">
+                  <div class="mt-3 min-h-[24px]">
                     <span v-if="registerForm.confirmPassword && !passwordsMatch" class="text-red-500 text-sm">
                       两次输入的密码不一致
                     </span>
@@ -74,7 +77,7 @@
             </div>
 
             <!-- 注册按钮 -->
-            <div class="pt-6">
+            <div class="pt-8">
               <UButton
                 type="submit"
                 color="primary"
@@ -83,22 +86,22 @@
                 :loading="loading"
                 :disabled="!canSubmit"
                 icon="i-heroicons-user-plus"
-                class="h-12 text-base font-medium"
+                class="h-14 text-base font-medium"
               >
                 {{ loading ? '注册中...' : '创建账户' }}
               </UButton>
             </div>
 
             <!-- 提示信息 -->
-            <UAlert
-              v-if="message"
-              :color="success ? 'success' : 'error'"
-              variant="soft"
-              :title="success ? '注册成功' : '注册失败'"
-              :description="message"
-              :icon="success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
-              class="mt-4"
-            />
+            <div v-if="message" class="pt-4">
+              <UAlert
+                :color="success ? 'success' : 'error'"
+                variant="soft"
+                :title="success ? '注册成功' : '注册失败'"
+                :description="message"
+                :icon="success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
+              />
+            </div>
           </UForm>
 
           <template #footer>
