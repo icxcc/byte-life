@@ -54,7 +54,6 @@ const handleLogout = async () => {
   isLoggingOut.value = true
   
   try {
-    console.log('开始退出登录...')
     
     // 先清理本地状态，确保UI立即响应
     user.value = null
@@ -63,26 +62,22 @@ const handleLogout = async () => {
     // 使用 Supabase 退出登录（设置超时）
     const logoutPromise = supabase.auth.signOut()
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('退出登录超时')), 5000)
+      setTimeout(() => reject(new Error('退出登录超时')), 10000)
     )
     
     try {
       const { error } = await Promise.race([logoutPromise, timeoutPromise]) as any
       if (error) {
-        console.warn('Supabase 退出登录失败:', error)
         // 不抛出错误，继续执行跳转
       }
     } catch (timeoutError) {
-      console.warn('退出登录超时，强制跳转:', timeoutError)
       // 超时也不阻塞，继续执行跳转
     }
     
     // 强制跳转到登录页面
     await navigateTo('/admin', { replace: true })
     
-    console.log('退出登录完成')
   } catch (error) {
-    console.error('退出登录过程中出错:', error)
     // 无论如何都要跳转到登录页面
     await navigateTo('/admin', { replace: true })
   } finally {
