@@ -83,14 +83,7 @@ export default defineNuxtConfig({
     layoutTransition: { name: 'layout', mode: 'out-in' }
   },
 
-  // 性能优化
-  nitro: {
-    compressPublicAssets: true,
-    minify: true,
-    experimental: {
-      wasm: true
-    }
-  },
+
 
   // 图片优化配置
   image: {
@@ -133,6 +126,29 @@ export default defineNuxtConfig({
   // 构建优化
   build: {
     transpile: ['@nuxt/ui']
+  },
+
+  // Vite 配置 - 生产环境优化
+  vite: {
+    esbuild: {
+      // 生产环境去除 console 和 debugger
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
+    }
+  },
+
+  // Nitro 配置 - 服务端优化
+  nitro: {
+    compressPublicAssets: true,
+    minify: true,
+    experimental: {
+      wasm: true
+    },
+    esbuild: {
+      options: {
+        // 服务端也去除console和debugger
+        drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
+      }
+    }
   },
 
   // 开发服务器配置
