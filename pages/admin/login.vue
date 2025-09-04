@@ -82,36 +82,32 @@
           </UForm>
 
           <template #footer>
-            <div class="space-y-3 pt-2">
+            <div class="flex items-center justify-between pt-2 border-t">
               <!-- 忘记密码链接 -->
-              <div class="text-center">
+              <UButton
+                to="/admin/forgot-password"
+                variant="ghost"
+                color="primary"
+                size="sm"
+                :padded="false"
+                class="text-sm hover:underline"
+              >
+                忘记密码？
+              </UButton>
+              
+              <!-- 注册链接 -->
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                还没有账号？
                 <UButton
-                  to="/admin/forgot-password"
+                  to="/admin/register"
                   variant="ghost"
                   color="primary"
                   size="sm"
                   :padded="false"
-                  class="text-sm hover:underline"
+                  class="text-sm hover:underline ml-1"
                 >
-                  忘记密码？
+                  立即注册
                 </UButton>
-              </div>
-              
-              <!-- 注册链接 -->
-              <div class="text-center border-t pt-3">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                  还没有账号？
-                  <UButton
-                    to="/admin/register"
-                    variant="ghost"
-                    color="primary"
-                    size="sm"
-                    :padded="false"
-                    class="text-sm hover:underline"
-                  >
-                    立即注册
-                  </UButton>
-                </p>
               </div>
             </div>
           </template>
