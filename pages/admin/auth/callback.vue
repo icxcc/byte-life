@@ -34,23 +34,37 @@
           <!-- 成功/失败状态 -->
           <div v-else class="space-y-6">
             <UAlert
-              :color="isSuccess ? 'success' : 'error'"
+              :color="isSuccess ? 'success' : 'warning'"
               variant="soft"
-              :title="isSuccess ? '邮箱验证成功' : '邮箱验证失败'"
+              :title="isSuccess ? '邮箱验证成功' : '验证状态未知'"
               :description="alertMessage"
               :icon="isSuccess ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
             />
 
-            <div class="pt-2 w-full">
+            <!-- 按钮组 -->
+            <div class="space-y-3 pt-2 w-full">
               <UButton
-                :to="isSuccess ? '/admin' : '/admin/register'"
+                to="/admin"
                 color="primary"
                 size="lg"
                 block
-                :icon="isSuccess ? 'i-heroicons-arrow-right-on-rectangle' : 'i-heroicons-arrow-left'"
+                icon="i-heroicons-arrow-right-on-rectangle"
                 class="h-12 text-base font-medium w-full"
               >
-                {{ isSuccess ? '前往登录' : '重新注册' }}
+                前往登录
+              </UButton>
+              
+              <UButton
+                v-if="!isSuccess"
+                to="/admin/register"
+                color="gray"
+                variant="ghost"
+                size="lg"
+                block
+                icon="i-heroicons-user-plus"
+                class="h-12 text-base font-medium w-full"
+              >
+                重新注册
               </UButton>
             </div>
           </div>
@@ -90,9 +104,9 @@ const statusMessage = computed(() => {
 
 const alertMessage = computed(() => {
   if (isSuccess.value) {
-    return '恭喜！您的邮箱已成功验证，现在可以使用您的账户登录了。'
+    return '恭喜！您的邮箱已成功验证，现在可以使用您的账户登录了。3秒后将自动跳转到登录页面。'
   }
-  return errorMessage.value || '验证链接可能已过期或无效，请重新注册或联系管理员。'
+  return errorMessage.value || '验证过程中出现问题。如果您能正常登录，说明验证已成功，可以忽略此提示。'
 })
 
 // 处理邮箱验证
@@ -101,10 +115,13 @@ const handleEmailVerification = async () => {
     const route = useRoute()
     
     // 检查URL中是否有认证相关的参数
-    const { access_token, refresh_token, type } = route.query
+    const { access_token, refresh_token, type, token_hash, next } = route.query
     
-    if (type === 'signup' && access_token) {
-      // 设置会话
+    console.log('回调参数:', { access_token, refresh_token, type, token_hash, next })
+    
+    // 处理不同类型的认证回调
+    if (access_token && refresh_token) {
+      // 方式1: 直接设置会话（适用于邮箱验证）
       const { data, error } = await supabase.auth.setSession({
         access_token: access_token as string,
         refresh_token: refresh_token as string
@@ -117,12 +134,51 @@ const handleEmailVerification = async () => {
       if (data.user) {
         isSuccess.value = true
         console.log('邮箱验证成功:', data.user.email)
+        return
       }
-    } else {
-      throw new Error('无效的验证链接')
     }
+    
+    if (token_hash && type) {
+      // 方式2: 使用token_hash验证（Supabase新版本）
+      const { data, error } = await supabase.auth.verifyOtp({
+        token_hash: token_hash as string,
+        type: type as any
+      })
+      
+      if (error) {
+        throw error
+      }
+      
+      if (data.user) {
+        isSuccess.value = true
+        console.log('邮箱验证成功:', data.user.email)
+        return
+      }
+    }
+    
+    // 方式3: 检查当前会话状态（可能已经自动验证）
+    const { data: sessionData } = await supabase.auth.getSession()
+    if (sessionData.session?.user) {
+      isSuccess.value = true
+      console.log('用户已登录:', sessionData.session.user.email)
+      return
+    }
+    
+    // 如果所有方式都失败，但URL包含认证参数，可能是已经验证过的
+    if (access_token || token_hash) {
+      // 尝试获取用户信息
+      const { data: userData } = await supabase.auth.getUser()
+      if (userData.user) {
+        isSuccess.value = true
+        console.log('用户验证成功:', userData.user.email)
+        return
+      }
+    }
+    
+    throw new Error('无法验证邮箱，请检查验证链接是否有效')
+    
   } catch (error: any) {
-    console.error('邮箱验证失败:', error)
+    console.error('邮箱验证过程:', error)
     isSuccess.value = false
     errorMessage.value = error.message || '验证过程中发生错误'
   } finally {
@@ -131,8 +187,17 @@ const handleEmailVerification = async () => {
 }
 
 // 页面加载时处理验证
-onMounted(() => {
-  handleEmailVerification()
+onMounted(async () => {
+  // 添加延迟，让用户看到加载状态
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  await handleEmailVerification()
+  
+  // 如果验证成功，3秒后自动跳转
+  if (isSuccess.value) {
+    setTimeout(() => {
+      navigateTo('/admin')
+    }, 3000)
+  }
 })
 
 // SEO
