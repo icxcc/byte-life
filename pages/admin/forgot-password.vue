@@ -81,8 +81,9 @@
           </UForm>
 
           <template #footer>
-            <div class="text-center space-y-3 pt-2">
-              <p class="text-sm text-gray-600 dark:text-gray-400">
+            <div class="flex items-center justify-between pt-2 border-t">
+              <!-- 返回登录链接 -->
+              <div class="text-sm text-gray-600 dark:text-gray-400">
                 想起密码了？
                 <UButton
                   to="/admin"
@@ -90,12 +91,14 @@
                   color="primary"
                   size="sm"
                   :padded="false"
-                  class="text-sm hover:underline"
+                  class="text-sm hover:underline ml-1"
                 >
                   返回登录
                 </UButton>
-              </p>
-              <p class="text-sm text-gray-600 dark:text-gray-400">
+              </div>
+              
+              <!-- 注册链接 -->
+              <div class="text-sm text-gray-600 dark:text-gray-400">
                 还没有账号？
                 <UButton
                   to="/admin/register"
@@ -103,11 +106,11 @@
                   color="primary"
                   size="sm"
                   :padded="false"
-                  class="text-sm hover:underline"
+                  class="text-sm hover:underline ml-1"
                 >
                   立即注册
                 </UButton>
-              </p>
+              </div>
             </div>
           </template>
         </UCard>
