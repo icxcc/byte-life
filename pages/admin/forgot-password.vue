@@ -26,51 +26,61 @@
           </template>
 
           <UForm :state="{ email }" @submit="handleResetPassword" class="space-y-6">
-            <UFormGroup label="邮箱地址" name="email" required>
-              <UInput
-                v-model="email"
-                type="email"
-                placeholder="请输入注册时使用的邮箱"
-                icon="i-heroicons-envelope"
+            <!-- 表单输入区域 -->
+            <div class="space-y-5">
+              <UFormGroup label="邮箱地址" name="email" required>
+                <UInput
+                  v-model="email"
+                  type="email"
+                  placeholder="请输入注册时使用的邮箱"
+                  icon="i-heroicons-envelope"
+                  size="lg"
+                  :disabled="loading"
+                />
+              </UFormGroup>
+            </div>
+
+            <!-- 发送按钮 -->
+            <div class="pt-4">
+              <UButton
+                type="submit"
+                color="primary"
                 size="lg"
-                :disabled="loading"
+                block
+                :loading="loading"
+                :disabled="!email || loading"
+                icon="i-heroicons-paper-airplane"
+                class="h-12 text-base font-medium"
+              >
+                {{ loading ? '发送中...' : '发送重置链接' }}
+              </UButton>
+            </div>
+
+            <!-- 状态提示 -->
+            <div class="space-y-4">
+              <UAlert
+                v-if="message"
+                :color="success ? 'success' : 'error'"
+                variant="soft"
+                :title="success ? '发送成功' : '发送失败'"
+                :description="message"
+                :icon="success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
               />
-            </UFormGroup>
 
-            <UButton
-              type="submit"
-              color="primary"
-              size="lg"
-              block
-              :loading="loading"
-              :disabled="!email || loading"
-              icon="i-heroicons-paper-airplane"
-            >
-              {{ loading ? '发送中...' : '发送重置链接' }}
-            </UButton>
-
-            <UAlert
-              v-if="message"
-              :color="success ? 'green' : 'red'"
-              variant="soft"
-              :title="success ? '发送成功' : '发送失败'"
-              :description="message"
-              :icon="success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
-            />
-
-            <!-- 提示信息 -->
-            <UAlert
-              v-if="!message"
-              color="blue"
-              variant="soft"
-              title="温馨提示"
-              description="重置链接将发送到您的邮箱，请注意查收垃圾邮件文件夹"
-              icon="i-heroicons-information-circle"
-            />
+              <!-- 温馨提示 -->
+              <UAlert
+                v-if="!message"
+                color="info"
+                variant="soft"
+                title="温馨提示"
+                description="重置链接将发送到您的邮箱，请注意查收垃圾邮件文件夹"
+                icon="i-heroicons-information-circle"
+              />
+            </div>
           </UForm>
 
           <template #footer>
-            <div class="text-center space-y-2">
+            <div class="text-center space-y-3 pt-2">
               <p class="text-sm text-gray-600 dark:text-gray-400">
                 想起密码了？
                 <UButton
@@ -79,6 +89,7 @@
                   color="primary"
                   size="sm"
                   :padded="false"
+                  class="text-sm hover:underline"
                 >
                   返回登录
                 </UButton>
@@ -91,6 +102,7 @@
                   color="primary"
                   size="sm"
                   :padded="false"
+                  class="text-sm hover:underline"
                 >
                   立即注册
                 </UButton>

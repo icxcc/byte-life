@@ -26,72 +26,83 @@
           </template>
 
           <UForm :state="registerForm" @submit="handleRegister" class="space-y-6">
-            <UFormGroup label="邮箱地址" name="email" required>
-              <UInput
-                v-model="registerForm.email"
-                type="email"
-                placeholder="请输入邮箱地址"
-                icon="i-heroicons-envelope"
+            <!-- 表单输入区域 -->
+            <div class="space-y-5">
+              <UFormGroup label="邮箱地址" name="email" required>
+                <UInput
+                  v-model="registerForm.email"
+                  type="email"
+                  placeholder="请输入邮箱地址"
+                  icon="i-heroicons-envelope"
+                  size="lg"
+                  :disabled="loading"
+                />
+              </UFormGroup>
+
+              <UFormGroup label="密码" name="password" required>
+                <UInput
+                  v-model="registerForm.password"
+                  type="password"
+                  placeholder="请输入密码（至少6位）"
+                  icon="i-heroicons-lock-closed"
+                  size="lg"
+                  :disabled="loading"
+                />
+              </UFormGroup>
+
+              <UFormGroup label="确认密码" name="confirmPassword" required>
+                <UInput
+                  v-model="registerForm.confirmPassword"
+                  type="password"
+                  placeholder="请再次输入密码"
+                  icon="i-heroicons-lock-closed"
+                  size="lg"
+                  :disabled="loading"
+                  :color="passwordsMatch ? 'primary' : 'error'"
+                />
+                <template #hint>
+                  <div class="mt-2 min-h-[20px]">
+                    <span v-if="registerForm.confirmPassword && !passwordsMatch" class="text-red-500 text-sm">
+                      两次输入的密码不一致
+                    </span>
+                    <span v-else-if="registerForm.password && registerForm.password.length < 6" class="text-red-500 text-sm">
+                      密码长度至少为6位
+                    </span>
+                  </div>
+                </template>
+              </UFormGroup>
+            </div>
+
+            <!-- 注册按钮 -->
+            <div class="pt-6">
+              <UButton
+                type="submit"
+                color="primary"
                 size="lg"
-                :disabled="loading"
-              />
-            </UFormGroup>
+                block
+                :loading="loading"
+                :disabled="!canSubmit"
+                icon="i-heroicons-user-plus"
+                class="h-12 text-base font-medium"
+              >
+                {{ loading ? '注册中...' : '创建账户' }}
+              </UButton>
+            </div>
 
-            <UFormGroup label="密码" name="password" required>
-              <UInput
-                v-model="registerForm.password"
-                type="password"
-                placeholder="请输入密码（至少6位）"
-                icon="i-heroicons-lock-closed"
-                size="lg"
-                :disabled="loading"
-              />
-            </UFormGroup>
-
-            <UFormGroup label="确认密码" name="confirmPassword" required>
-              <UInput
-                v-model="registerForm.confirmPassword"
-                type="password"
-                placeholder="请再次输入密码"
-                icon="i-heroicons-lock-closed"
-                size="lg"
-                :disabled="loading"
-                :color="passwordsMatch ? 'primary' : 'red'"
-              />
-              <template #hint>
-                <span v-if="registerForm.confirmPassword && !passwordsMatch" class="text-red-500 text-sm">
-                  两次输入的密码不一致
-                </span>
-                <span v-else-if="registerForm.password && registerForm.password.length < 6" class="text-red-500 text-sm">
-                  密码长度至少为6位
-                </span>
-              </template>
-            </UFormGroup>
-
-            <UButton
-              type="submit"
-              color="primary"
-              size="lg"
-              block
-              :loading="loading"
-              :disabled="!canSubmit"
-              icon="i-heroicons-user-plus"
-            >
-              {{ loading ? '注册中...' : '创建账户' }}
-            </UButton>
-
+            <!-- 提示信息 -->
             <UAlert
               v-if="message"
-              :color="success ? 'green' : 'red'"
+              :color="success ? 'success' : 'error'"
               variant="soft"
               :title="success ? '注册成功' : '注册失败'"
               :description="message"
               :icon="success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
+              class="mt-4"
             />
           </UForm>
 
           <template #footer>
-            <div class="text-center">
+            <div class="text-center pt-2">
               <p class="text-sm text-gray-600 dark:text-gray-400">
                 已有账户？
                 <UButton
@@ -100,6 +111,7 @@
                   color="primary"
                   size="sm"
                   :padded="false"
+                  class="text-sm hover:underline"
                 >
                   立即登录
                 </UButton>
