@@ -155,6 +155,7 @@ const handleLogout = async () => {
   
   isLoggingOut.value = true
   try {
+    // 直接调用emit，不需要await
     emit('logout')
   } finally {
     // 延迟重置状态，避免闪烁
@@ -199,7 +200,7 @@ const userMenuItems = computed(() => [
   [{
     label: isLoggingOut.value ? '正在退出...' : '退出登录',
     icon: isLoggingOut.value ? 'i-heroicons-arrow-path' : 'i-heroicons-arrow-right-on-rectangle',
-    click: handleLogout,
+    onSelect: handleLogout,
     disabled: isLoggingOut.value
   }]
 ])
