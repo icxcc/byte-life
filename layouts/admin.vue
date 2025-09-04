@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="admin-layout-root h-screen bg-gray-50 dark:bg-gray-900">
     <!-- 未认证时重定向到登录页面 -->
     <div v-if="!isAuthenticated && !isLoading" class="flex items-center justify-center h-full">
       <div class="text-center">
@@ -116,6 +116,16 @@ provide('auth', {
 </script>
 
 <style scoped>
+/* 管理员布局根容器 - 强制覆盖全局样式 */
+.admin-layout-root {
+  overflow: hidden !important;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 /* 侧边栏菜单项简洁过渡 */
 .menu-item {
   transition: background-color 0.15s ease-in-out;
@@ -142,5 +152,24 @@ provide('auth', {
 /* 防止内容跳动 */
 .content-container {
   min-height: 0;
+}
+
+/* 确保主内容区域正确滚动 */
+.admin-layout main {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+</style>
+
+<!-- 全局样式 - 确保在生产环境中生效 -->
+<style>
+/* 当admin布局激活时，禁用body滚动 */
+body:has(.admin-layout-root) {
+  overflow: hidden !important;
+}
+
+/* 兼容性处理 */
+.admin-layout-root ~ * {
+  overflow: hidden;
 }
 </style>

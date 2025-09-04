@@ -25,6 +25,16 @@ body {
   min-height: 100vh;
 }
 
+/* 管理员布局特殊处理 - 防止双层滚动条 */
+.admin-layout {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.admin-layout body {
+  overflow: hidden;
+}
+
 body.dark {
   background-color: rgb(17 24 39);
   color: rgb(229 231 235);
