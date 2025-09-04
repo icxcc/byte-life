@@ -82,7 +82,7 @@
           </UForm>
 
           <template #footer>
-            <div class="flex items-center justify-between pt-2 border-t">
+            <div class="flex items-center justify-between pt-2">
               <!-- 忘记密码链接 -->
               <UButton
                 to="/admin/forgot-password"
