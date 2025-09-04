@@ -25,10 +25,10 @@
             </div>
           </template>
 
-          <UForm :state="registerForm" @submit="handleRegister" class="space-y-8">
+          <UForm :state="registerForm" @submit="handleRegister" class="space-y-5 w-full">
             <!-- 表单输入区域 -->
-            <div class="space-y-6">
-              <UFormGroup label="邮箱地址" name="email" required>
+            <div class="space-y-4 w-full">
+              <UFormGroup label="邮箱地址" name="email" required class="w-full">
                 <UInput
                   v-model="registerForm.email"
                   type="email"
@@ -36,11 +36,11 @@
                   icon="i-heroicons-envelope"
                   size="lg"
                   :disabled="loading"
-                  class="h-12"
+                  class="h-11 w-full"
                 />
               </UFormGroup>
 
-              <UFormGroup label="密码" name="password" required>
+              <UFormGroup label="密码" name="password" required class="w-full">
                 <UInput
                   v-model="registerForm.password"
                   type="password"
@@ -48,11 +48,11 @@
                   icon="i-heroicons-lock-closed"
                   size="lg"
                   :disabled="loading"
-                  class="h-12"
+                  class="h-11 w-full"
                 />
               </UFormGroup>
 
-              <UFormGroup label="确认密码" name="confirmPassword" required>
+              <UFormGroup label="确认密码" name="confirmPassword" required class="w-full">
                 <UInput
                   v-model="registerForm.confirmPassword"
                   type="password"
@@ -61,10 +61,10 @@
                   size="lg"
                   :disabled="loading"
                   :color="passwordsMatch ? 'primary' : 'error'"
-                  class="h-12"
+                  class="h-11 w-full"
                 />
                 <template #hint>
-                  <div class="mt-3 min-h-[24px]">
+                  <div class="mt-2 min-h-[20px]">
                     <span v-if="registerForm.confirmPassword && !passwordsMatch" class="text-red-500 text-sm">
                       两次输入的密码不一致
                     </span>
@@ -77,7 +77,7 @@
             </div>
 
             <!-- 注册按钮 -->
-            <div class="pt-8">
+            <div class="pt-2 w-full">
               <UButton
                 type="submit"
                 color="primary"
@@ -86,14 +86,14 @@
                 :loading="loading"
                 :disabled="!canSubmit"
                 icon="i-heroicons-user-plus"
-                class="h-14 text-base font-medium"
+                class="h-12 text-base font-medium w-full"
               >
                 {{ loading ? '注册中...' : '创建账户' }}
               </UButton>
             </div>
 
             <!-- 提示信息 -->
-            <div v-if="message" class="pt-4">
+            <div v-if="message" class="pt-3">
               <UAlert
                 :color="success ? 'success' : 'error'"
                 variant="soft"

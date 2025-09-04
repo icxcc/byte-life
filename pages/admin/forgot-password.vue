@@ -25,10 +25,10 @@
             </div>
           </template>
 
-          <UForm :state="{ email }" @submit="handleResetPassword" class="space-y-8">
+          <UForm :state="{ email }" @submit="handleResetPassword" class="space-y-5 w-full">
             <!-- 表单输入区域 -->
-            <div class="space-y-6">
-              <UFormGroup label="邮箱地址" name="email" required>
+            <div class="space-y-4 w-full">
+              <UFormGroup label="邮箱地址" name="email" required class="w-full">
                 <UInput
                   v-model="email"
                   type="email"
@@ -36,13 +36,13 @@
                   icon="i-heroicons-envelope"
                   size="lg"
                   :disabled="loading"
-                  class="h-12"
+                  class="h-11 w-full"
                 />
               </UFormGroup>
             </div>
 
             <!-- 发送按钮 -->
-            <div class="pt-8">
+            <div class="pt-2 w-full">
               <UButton
                 type="submit"
                 color="primary"
@@ -51,7 +51,7 @@
                 :loading="loading"
                 :disabled="!email || loading"
                 icon="i-heroicons-paper-airplane"
-                class="h-14 text-base font-medium"
+                class="h-12 text-base font-medium w-full"
               >
                 {{ loading ? '发送中...' : '发送重置链接' }}
               </UButton>

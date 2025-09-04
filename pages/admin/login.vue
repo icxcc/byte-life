@@ -25,10 +25,10 @@
             </div>
           </template>
 
-          <UForm :state="loginForm" @submit="handleLogin" class="space-y-8">
+          <UForm :state="loginForm" @submit="handleLogin" class="space-y-5 w-full">
             <!-- 表单输入区域 -->
-            <div class="space-y-6">
-              <UFormGroup label="邮箱地址" name="email" required>
+            <div class="space-y-4 w-full">
+              <UFormGroup label="邮箱地址" name="email" required class="w-full">
                 <UInput
                   v-model="loginForm.email"
                   type="email"
@@ -36,11 +36,11 @@
                   icon="i-heroicons-envelope"
                   size="lg"
                   :disabled="isLoading"
-                  class="h-12"
+                  class="h-11 w-full"
                 />
               </UFormGroup>
 
-              <UFormGroup label="密码" name="password" required>
+              <UFormGroup label="密码" name="password" required class="w-full">
                 <UInput
                   v-model="loginForm.password"
                   type="password"
@@ -48,27 +48,13 @@
                   icon="i-heroicons-lock-closed"
                   size="lg"
                   :disabled="isLoading"
-                  class="h-12"
+                  class="h-11 w-full"
                 />
               </UFormGroup>
             </div>
 
-            <!-- 忘记密码链接 -->
-            <div class="flex items-center justify-end py-2">
-              <UButton
-                to="/admin/forgot-password"
-                variant="ghost"
-                color="primary"
-                size="sm"
-                :padded="false"
-                class="text-sm hover:underline"
-              >
-                忘记密码？
-              </UButton>
-            </div>
-
             <!-- 登录按钮 -->
-            <div class="pt-6">
+            <div class="pt-2 w-full">
               <UButton
                 type="submit"
                 color="primary"
@@ -77,14 +63,14 @@
                 :loading="isLoading"
                 :disabled="!loginForm.email || !loginForm.password"
                 icon="i-heroicons-arrow-right-on-rectangle"
-                class="h-14 text-base font-medium"
+                class="h-12 text-base font-medium w-full"
               >
                 {{ isLoading ? '登录中...' : '登录' }}
               </UButton>
             </div>
 
             <!-- 错误提示 -->
-            <div v-if="errorMessage" class="pt-4">
+            <div v-if="errorMessage" class="pt-3">
               <UAlert
                 color="error"
                 variant="soft"
@@ -96,20 +82,37 @@
           </UForm>
 
           <template #footer>
-            <div class="text-center pt-2">
-              <p class="text-sm text-gray-600 dark:text-gray-400">
-                还没有账号？
+            <div class="space-y-3 pt-2">
+              <!-- 忘记密码链接 -->
+              <div class="text-center">
                 <UButton
-                  to="/admin/register"
+                  to="/admin/forgot-password"
                   variant="ghost"
                   color="primary"
                   size="sm"
                   :padded="false"
                   class="text-sm hover:underline"
                 >
-                  立即注册
+                  忘记密码？
                 </UButton>
-              </p>
+              </div>
+              
+              <!-- 注册链接 -->
+              <div class="text-center border-t pt-3">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  还没有账号？
+                  <UButton
+                    to="/admin/register"
+                    variant="ghost"
+                    color="primary"
+                    size="sm"
+                    :padded="false"
+                    class="text-sm hover:underline"
+                  >
+                    立即注册
+                  </UButton>
+                </p>
+              </div>
             </div>
           </template>
         </UCard>

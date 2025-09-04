@@ -25,10 +25,10 @@
             </div>
           </template>
 
-          <UForm v-if="!resetComplete" :state="{ password, confirmPassword }" @submit="handleUpdatePassword" class="space-y-8">
+          <UForm v-if="!resetComplete" :state="{ password, confirmPassword }" @submit="handleUpdatePassword" class="space-y-5 w-full">
             <!-- 表单输入区域 -->
-            <div class="space-y-6">
-              <UFormGroup label="新密码" name="password" required>
+            <div class="space-y-4 w-full">
+              <UFormGroup label="新密码" name="password" required class="w-full">
                 <UInput
                   v-model="password"
                   type="password"
@@ -36,11 +36,11 @@
                   icon="i-heroicons-lock-closed"
                   size="lg"
                   :disabled="loading"
-                  class="h-12"
+                  class="h-11 w-full"
                 />
               </UFormGroup>
 
-              <UFormGroup label="确认密码" name="confirmPassword" required>
+              <UFormGroup label="确认密码" name="confirmPassword" required class="w-full">
                 <UInput
                   v-model="confirmPassword"
                   type="password"
@@ -49,10 +49,10 @@
                   size="lg"
                   :disabled="loading"
                   :color="passwordsMatch ? 'primary' : 'error'"
-                  class="h-12"
+                  class="h-11 w-full"
                 />
                 <template #hint>
-                  <div class="mt-3 min-h-[24px]">
+                  <div class="mt-2 min-h-[20px]">
                     <span v-if="confirmPassword && !passwordsMatch" class="text-red-500 text-sm">
                       两次输入的密码不一致
                     </span>
@@ -65,7 +65,7 @@
             </div>
 
             <!-- 更新按钮 -->
-            <div class="pt-8">
+            <div class="pt-2 w-full">
               <UButton
                 type="submit"
                 color="primary"
@@ -74,7 +74,7 @@
                 :loading="loading"
                 :disabled="!canSubmit"
                 icon="i-heroicons-check"
-                class="h-14 text-base font-medium"
+                class="h-12 text-base font-medium w-full"
               >
                 {{ loading ? '更新中...' : '更新密码' }}
               </UButton>
@@ -102,14 +102,14 @@
               icon="i-heroicons-check-circle"
             />
             
-            <div class="pt-4">
+            <div class="pt-2 w-full">
               <UButton
                 to="/admin"
                 color="primary"
                 size="lg"
                 block
                 icon="i-heroicons-arrow-right-on-rectangle"
-                class="h-12 text-base font-medium"
+                class="h-12 text-base font-medium w-full"
               >
                 返回登录
               </UButton>
