@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '~/lib/supabase'
+import { supabase, supabaseAdmin } from '~/lib/supabase'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -30,8 +30,33 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // 在实际应用中，这里应该从数据库中删除文章
-    console.log('删除文章 ID:', articleId)
+    // 检查文章是否存在
+    const { data: existingArticle, error: fetchError } = await supabase
+      .from('articles')
+      .select('id, title')
+      .eq('id', articleId)
+      .single()
+
+    if (fetchError || !existingArticle) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: '文章不存在'
+      })
+    }
+
+    // 删除文章
+    const { error } = await supabase
+      .from('articles')
+      .delete()
+      .eq('id', articleId)
+
+    if (error) {
+      console.error('Supabase 删除错误:', error)
+      throw createError({
+        statusCode: 500,
+        statusMessage: '删除文章失败'
+      })
+    }
 
     return {
       success: true,

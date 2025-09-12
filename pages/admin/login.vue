@@ -28,7 +28,7 @@
           <UForm :state="loginForm" @submit="handleLogin" class="space-y-5 w-full">
             <!-- 表单输入区域 -->
             <div class="space-y-4 w-full">
-              <UFormGroup label="邮箱地址" name="email" required class="w-full">
+              <UFormField label="邮箱地址" name="email" required class="w-full">
                 <UInput
                   v-model="loginForm.email"
                   type="email"
@@ -38,9 +38,9 @@
                   :disabled="isLoading"
                   class="h-11 w-full"
                 />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup label="密码" name="password" required class="w-full">
+              <UFormField label="密码" name="password" required class="w-full">
                 <UInput
                   v-model="loginForm.password"
                   type="password"
@@ -50,7 +50,7 @@
                   :disabled="isLoading"
                   class="h-11 w-full"
                 />
-              </UFormGroup>
+              </UFormField>
             </div>
 
             <!-- 登录按钮 -->

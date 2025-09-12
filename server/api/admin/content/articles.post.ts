@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '~/lib/supabase'
+import { supabase, supabaseAdmin } from '~/lib/supabase'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -23,54 +23,122 @@ export default defineEventHandler(async (event) => {
 
     // 获取请求体数据
     const body = await readBody(event)
+    console.log('接收到的请求数据:', JSON.stringify(body, null, 2))
+    
+    // 严格按照数据库表结构解构数据
     const {
       title,
       slug,
       content,
       excerpt,
-      coverImage,
-      category,
+      cover_image,
+      channel_id,
+      author,
+      status,
+      featured,
       tags,
-      published,
-      featured
+      meta_title,
+      meta_description,
+      read_time,
+      views,
+      likes
     } = body
 
     // 验证必填字段
-    if (!title || !slug || !content) {
+    if (!title || !slug) {
+      console.error('必填字段验证失败:', { title, slug })
       throw createError({
         statusCode: 400,
-        statusMessage: '标题、URL别名和内容为必填字段'
+        statusMessage: '标题和URL别名为必填字段'
       })
     }
 
-    // 模拟创建文章
-    const newArticle = {
-      id: Date.now(), // 在实际应用中应该由数据库生成
-      title,
-      slug,
-      content,
-      excerpt: excerpt || content.substring(0, 200) + '...',
-      coverImage: coverImage || '',
-      category: category || '',
-      tags: tags || '',
-      published: published || false,
-      featured: featured || false,
-      publishedAt: published ? new Date().toISOString() : null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      readTime: Math.ceil(content.length / 200), // 简单估算阅读时间
-      views: 0,
-      likes: 0,
-      authorId: user.id
+    console.log('字段验证通过，开始检查数据库连接...')
+
+    // 检查slug是否已存在
+    const { data: existingArticle } = await supabase
+      .from('articles')
+      .select('id')
+      .eq('slug', slug)
+      .single()
+
+    if (existingArticle) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'URL别名已存在，请使用其他别名'
+      })
     }
 
-    // 在实际应用中，这里应该将数据保存到数据库
-    console.log('创建文章:', newArticle)
+    // 严格按照数据库表结构创建文章数据
+    const articleData = {
+      title: title,                                                    // VARCHAR(500) NOT NULL
+      slug: slug,                                                      // VARCHAR(500) UNIQUE NOT NULL
+      content: content || null,                                        // TEXT
+      excerpt: excerpt || null,                                        // TEXT
+      cover_image: cover_image || null,                               // TEXT
+      channel_id: channel_id || null,                                 // UUID REFERENCES channels(id)
+      author: author || user.email || null,                          // VARCHAR(255)
+      status: status || 'draft',                                      // VARCHAR(20) DEFAULT 'draft'
+      featured: featured || false,                                    // BOOLEAN DEFAULT false
+      tags: Array.isArray(tags) ? tags : [],                        // TEXT[] DEFAULT '{}'
+      meta_title: meta_title || null,                                // VARCHAR(255)
+      meta_description: meta_description || null,                    // TEXT
+      read_time: parseInt(read_time) || 0,                          // INTEGER DEFAULT 0
+      views: parseInt(views) || 0,                                  // INTEGER DEFAULT 0
+      likes: parseInt(likes) || 0,                                  // INTEGER DEFAULT 0
+      published_at: status === 'published' ? new Date().toISOString() : null  // TIMESTAMP WITH TIME ZONE
+    }
 
+    // 保存到数据库
+    console.log('准备插入的文章数据:', JSON.stringify(articleData, null, 2))
+    
+    const { data: article, error } = await supabase
+      .from('articles')
+      .insert(articleData)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Supabase 插入错误:', error)
+      console.error('错误详情:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      })
+      throw createError({
+        statusCode: 500,
+        statusMessage: `创建文章失败: ${error.message}`
+      })
+    }
+
+    console.log('文章创建成功:', article)
+
+    // 严格按照数据库表结构返回数据
     return {
       success: true,
       data: {
-        article: newArticle
+        article: {
+          id: article.id,
+          title: article.title,
+          slug: article.slug,
+          content: article.content,
+          excerpt: article.excerpt,
+          cover_image: article.cover_image,
+          channel_id: article.channel_id,
+          author: article.author,
+          status: article.status,
+          featured: article.featured,
+          tags: article.tags,
+          meta_title: article.meta_title,
+          meta_description: article.meta_description,
+          read_time: article.read_time,
+          views: article.views,
+          likes: article.likes,
+          published_at: article.published_at,
+          created_at: article.created_at,
+          updated_at: article.updated_at
+        }
       },
       message: '文章创建成功'
     }

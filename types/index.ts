@@ -20,39 +20,48 @@ export interface ChannelForm {
   name: string
   slug: string
   description?: string
-  parent_id?: string
+  parent_id?: string | null
   sort_order: number
   is_active: boolean
 }
 
-// 文章类型
+// 文章类型 - 严格按照数据库表结构 (docs/database-schema.sql)
 export interface Article extends BaseEntity {
-  title: string
-  slug: string
-  content?: string
-  excerpt?: string
-  channel_id?: string
-  author_id?: string
-  status: 'draft' | 'published' | 'archived'
-  featured: boolean
-  tags: string[]
-  meta_title?: string
-  meta_description?: string
-  published_at?: string
+  title: string                    // VARCHAR(500) NOT NULL
+  slug: string                     // VARCHAR(500) UNIQUE NOT NULL
+  content?: string                 // TEXT
+  excerpt?: string                 // TEXT
+  cover_image?: string             // TEXT
+  channel_id?: string              // UUID REFERENCES channels(id) ON DELETE SET NULL
+  author?: string                  // VARCHAR(255)
+  status: 'draft' | 'published' | 'archived'  // VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived'))
+  featured: boolean                // BOOLEAN DEFAULT false
+  tags: string[]                   // TEXT[] DEFAULT '{}'
+  meta_title?: string              // VARCHAR(255)
+  meta_description?: string        // TEXT
+  read_time: number                // INTEGER DEFAULT 0
+  views: number                    // INTEGER DEFAULT 0
+  likes: number                    // INTEGER DEFAULT 0
+  published_at?: string            // TIMESTAMP WITH TIME ZONE
 }
 
-// 文章表单类型
+// 文章表单类型 - 严格按照数据库表结构
 export interface ArticleForm {
   title: string
   slug: string
   content?: string
   excerpt?: string
+  cover_image?: string
   channel_id?: string
+  author?: string
   status: 'draft' | 'published' | 'archived'
   featured: boolean
   tags: string[]
   meta_title?: string
   meta_description?: string
+  read_time: number
+  views: number
+  likes: number
 }
 
 // 联系人类型

@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '~/lib/supabase'
+import { supabase, supabaseAdmin } from '~/lib/supabase'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -44,38 +44,92 @@ export default defineEventHandler(async (event) => {
       featured
     } = body
 
-    // 验证必填字段
-    if (!title || !slug || !content) {
+    // 检查文章是否存在
+    const { data: existingArticle, error: fetchError } = await supabase
+      .from('articles')
+      .select('id, slug')
+      .eq('id', articleId)
+      .single()
+
+    if (fetchError || !existingArticle) {
       throw createError({
-        statusCode: 400,
-        statusMessage: '标题、URL别名和内容为必填字段'
+        statusCode: 404,
+        statusMessage: '文章不存在'
       })
     }
 
-    // 模拟更新文章
-    const updatedArticle = {
-      id: parseInt(articleId),
-      title,
-      slug,
-      content,
-      excerpt: excerpt || content.substring(0, 200) + '...',
-      coverImage: coverImage || '',
-      category: category || '',
-      tags: tags || '',
-      published: published || false,
-      featured: featured || false,
-      publishedAt: published ? new Date().toISOString() : null,
-      updatedAt: new Date().toISOString(),
-      readTime: Math.ceil(content.length / 200), // 简单估算阅读时间
+    // 如果slug发生变化，检查新slug是否已存在
+    if (slug && slug !== existingArticle.slug) {
+      const { data: slugExists } = await supabase
+        .from('articles')
+        .select('id')
+        .eq('slug', slug)
+        .neq('id', articleId)
+        .single()
+
+      if (slugExists) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'URL别名已存在，请使用其他别名'
+        })
+      }
     }
 
-    // 在实际应用中，这里应该更新数据库中的数据
-    console.log('更新文章:', updatedArticle)
+    // 准备更新数据
+    const updateData: any = {}
+    if (title) updateData.title = title
+    if (slug) updateData.slug = slug
+    if (content) updateData.content = content
+    if (excerpt !== undefined) updateData.excerpt = excerpt || content?.substring(0, 200) + '...'
+    if (coverImage !== undefined) updateData.cover_image = coverImage || null
+    if (category !== undefined) updateData.category = category || null
+    if (tags !== undefined) {
+      updateData.tags = Array.isArray(tags) ? tags : (tags ? tags.split(',').map((t: string) => t.trim()) : [])
+    }
+    if (published !== undefined) {
+      updateData.status = published ? '已发布' : '草稿'
+      updateData.published_at = published ? new Date().toISOString() : null
+    }
+    if (featured !== undefined) updateData.featured = featured
+    if (content) updateData.read_time = Math.ceil(content.length / 200)
+
+    // 更新文章
+    const { data: article, error } = await supabase
+      .from('articles')
+      .update(updateData)
+      .eq('id', articleId)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Supabase 更新错误:', error)
+      throw createError({
+        statusCode: 500,
+        statusMessage: '更新文章失败'
+      })
+    }
 
     return {
       success: true,
       data: {
-        article: updatedArticle
+        article: {
+          id: article.id,
+          title: article.title,
+          slug: article.slug,
+          excerpt: article.excerpt,
+          content: article.content,
+          category: article.category,
+          tags: article.tags || [],
+          status: article.status,
+          featured: article.featured,
+          readTime: article.read_time,
+          views: article.views,
+          likes: article.likes,
+          author: article.author,
+          publishedAt: article.published_at,
+          createdAt: article.created_at,
+          updatedAt: article.updated_at
+        }
       },
       message: '文章更新成功'
     }

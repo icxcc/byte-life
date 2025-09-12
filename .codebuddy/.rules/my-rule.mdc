@@ -1,7 +1,7 @@
 ---
-description: *.js,*.css,*.scss,*.ts,*.vue
+description: 
 globs:
-alwaysApply: false
+alwaysApply: true
 ---
   - "**/*.js"
   - "**/*.css"

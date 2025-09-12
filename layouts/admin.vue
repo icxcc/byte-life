@@ -1,7 +1,20 @@
 <template>
   <div class="admin-layout-root h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- 未认证时重定向到登录页面 -->
-    <div v-if="!isAuthenticated && !isLoading" class="flex items-center justify-center h-full">
+    <!-- 退出登录状态 -->
+    <div v-if="isLoggingOut" class="flex items-center justify-center h-full">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+        <p class="text-gray-600 dark:text-gray-400">正在退出登录...</p>
+      </div>
+    </div>
+
+    <!-- 未认证时显示空白或直接跳转，不显示加载状态 -->
+    <div v-else-if="!isAuthenticated && !isLoading && !isInitializing" class="hidden">
+      <!-- 空白状态，避免闪烁 -->
+    </div>
+
+    <!-- 初始化或验证身份时的加载状态 -->
+    <div v-else-if="isLoading || isInitializing" class="flex items-center justify-center h-full">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
         <p class="text-gray-600 dark:text-gray-400">正在验证身份...</p>
@@ -9,7 +22,7 @@
     </div>
 
     <!-- 管理员仪表板 -->
-    <div v-else-if="isAuthenticated" class="admin-layout flex h-full bg-gray-100 dark:bg-gray-900">
+    <div v-else-if="isAuthenticated && !isLoggingOut" class="admin-layout flex h-full bg-gray-100 dark:bg-gray-900">
       <!-- 侧边栏 -->
       <AdminSidebar/>
 
@@ -47,42 +60,32 @@ const currentSession = ref<any>(null)
 // 退出登录状态
 const isLoggingOut = ref(false)
 
+// 初始化状态 - 防止闪烁
+const isInitializing = ref(true)
+
 // 退出登录
 const handleLogout = async () => {
   if (isLoggingOut.value) return // 防止重复点击
   
+  console.log('开始退出登录...')
   isLoggingOut.value = true
   
-  try {
-    
-    // 先清理本地状态，确保UI立即响应
-    user.value = null
-    currentSession.value = null
-    
-    // 使用 Supabase 退出登录（设置超时）
-    const logoutPromise = supabase.auth.signOut()
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('退出登录超时')), 10000)
-    )
-    
-    try {
-      const { error } = await Promise.race([logoutPromise, timeoutPromise]) as any
-      if (error) {
-        // 不抛出错误，继续执行跳转
-      }
-    } catch (timeoutError) {
-      // 超时也不阻塞，继续执行跳转
-    }
-    
-    // 强制跳转到登录页面
-    await navigateTo('/admin', { replace: true })
-    
-  } catch (error) {
-    // 无论如何都要跳转到登录页面
-    await navigateTo('/admin', { replace: true })
-  } finally {
-    isLoggingOut.value = false
-  }
+  // 立即清理本地状态
+  user.value = null
+  currentSession.value = null
+  
+  // 异步执行Supabase退出，不等待
+  supabase.auth.signOut().then(() => {
+    console.log('Supabase退出登录完成')
+  }).catch(error => {
+    console.warn('Supabase退出登录失败:', error)
+  })
+  
+  // 短暂延迟后直接使用window.location跳转
+  setTimeout(() => {
+    console.log('强制跳转到登录页面')
+    window.location.href = '/admin/login'
+  }, 500)
 }
 
 // 初始化认证状态
@@ -95,28 +98,34 @@ onMounted(async () => {
       currentSession.value = session
     } else {
       // 如果没有会话，重定向到登录页面
-      await navigateTo('/admin')
+      await navigateTo('/admin/login')
     }
   } catch (error) {
     console.error('获取会话失败:', error)
-    await navigateTo('/admin')
+    await navigateTo('/admin/login')
   } finally {
     isLoading.value = false
+    // 延迟清除初始化状态，确保页面稳定
+    setTimeout(() => {
+      isInitializing.value = false
+    }, 300)
   }
 
   // 监听认证状态变化
   supabase.auth.onAuthStateChange(async (event: any, session: any) => {
-    console.log('认证状态变化:', event, session?.user?.email)
+    console.log('布局认证状态变化:', event, session?.user?.email)
     
     if (event === 'SIGNED_IN' && session?.user) {
       user.value = session.user
       currentSession.value = session
+      isLoggingOut.value = false // 确保登录后清除退出状态
     } else if (event === 'SIGNED_OUT' || !session) {
-      // 清理所有状态
-      user.value = null
-      currentSession.value = null
-      // 重定向到登录页面
-      await navigateTo('/admin')
+      // 只在非主动退出时处理
+      if (!isLoggingOut.value) {
+        console.log('非主动退出，清理状态')
+        user.value = null
+        currentSession.value = null
+      }
     }
   })
 })

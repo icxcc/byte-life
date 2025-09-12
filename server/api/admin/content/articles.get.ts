@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // 从 Supabase 获取文章数据
+    // 从 Supabase 获取文章数据 - 严格按照数据库表结构
     const { data: articles, error } = await supabase
       .from('articles')
       .select('*')
@@ -38,32 +38,36 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // 统计数据
+    // 统计数据 - 按照数据库表结构的状态值
     const stats = {
       total: articles.length,
-      published: articles.filter((a: any) => a.status === '已发布').length,
-      draft: articles.filter((a: any) => a.status === '草稿').length,
+      published: articles.filter((a: any) => a.status === 'published').length,
+      draft: articles.filter((a: any) => a.status === 'draft').length,
+      archived: articles.filter((a: any) => a.status === 'archived').length,
       featured: articles.filter((a: any) => a.featured).length
     }
 
-    // 格式化文章数据
+    // 严格按照数据库表结构格式化文章数据
     const formattedArticles = articles.map((article: any) => ({
-      id: article.id,
-      title: article.title,
-      slug: article.slug,
-      excerpt: article.excerpt,
-      content: article.content,
-      category: article.category,
-      tags: article.tags || [],
-      status: article.status,
-      featured: article.featured,
-      readTime: article.read_time,
-      views: article.views,
-      likes: article.likes,
-      author: article.author,
-      publishedAt: article.published_at,
-      createdAt: article.created_at,
-      updatedAt: article.updated_at
+      id: article.id,                                    // UUID
+      title: article.title,                              // VARCHAR(500)
+      slug: article.slug,                                // VARCHAR(500)
+      content: article.content,                          // TEXT
+      excerpt: article.excerpt,                          // TEXT
+      cover_image: article.cover_image,                  // TEXT
+      channel_id: article.channel_id,                    // UUID
+      author: article.author,                            // VARCHAR(255)
+      status: article.status,                            // VARCHAR(20)
+      featured: article.featured,                        // BOOLEAN
+      tags: article.tags || [],                          // TEXT[]
+      meta_title: article.meta_title,                    // VARCHAR(255)
+      meta_description: article.meta_description,        // TEXT
+      read_time: article.read_time,                      // INTEGER
+      views: article.views,                              // INTEGER
+      likes: article.likes,                              // INTEGER
+      published_at: article.published_at,                // TIMESTAMP WITH TIME ZONE
+      created_at: article.created_at,                    // TIMESTAMP WITH TIME ZONE
+      updated_at: article.updated_at                     // TIMESTAMP WITH TIME ZONE
     }))
 
     return {

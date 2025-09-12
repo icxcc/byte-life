@@ -1,5 +1,5 @@
 import { supabase } from '~/lib/supabase'
-import type { ApiResponse, ApiError } from '~/types'
+import type { ApiResponse } from '~/types'
 
 interface UseApiOptions {
   immediate?: boolean

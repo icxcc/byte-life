@@ -6,39 +6,39 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">栏目管理</h1>
         <p class="text-gray-600 dark:text-gray-400 mt-1">管理网站内容栏目分类</p>
       </div>
-      <UiButton
+      <UButton
         @click="showCreateModal = true"
-        icon="heroicons:plus"
-        variant="primary"
+        icon="i-heroicons-plus"
+        color="primary"
       >
         新建栏目
-      </UiButton>
+      </UButton>
     </div>
 
     <!-- 统计卡片 -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <AdminStatsCard
+      <StatsCard
         title="总栏目数"
         :value="stats.total"
-        icon="heroicons:tag"
+        icon="i-heroicons-tag"
         color="blue"
       />
-      <AdminStatsCard
+      <StatsCard
         title="启用栏目"
         :value="stats.active"
-        icon="heroicons:check-circle"
+        icon="i-heroicons-check-circle"
         color="green"
       />
-      <AdminStatsCard
+      <StatsCard
         title="禁用栏目"
         :value="stats.inactive"
-        icon="heroicons:x-circle"
+        icon="i-heroicons-x-circle"
         color="red"
       />
-      <AdminStatsCard
+      <StatsCard
         title="子栏目数"
         :value="stats.children"
-        icon="heroicons:folder-open"
+        icon="i-heroicons-folder-open"
         color="purple"
       />
     </div>
@@ -49,10 +49,10 @@
         <div class="flex justify-between items-center">
           <h2 class="text-lg font-semibold text-gray-900 dark:text-white">栏目列表</h2>
           <div class="flex items-center gap-4">
-            <UiInput
+            <UInput
               v-model="searchQuery"
               placeholder="搜索栏目..."
-              prefix-icon="heroicons:magnifying-glass"
+              icon="i-heroicons-magnifying-glass"
               size="sm"
             />
           </div>
@@ -120,21 +120,21 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex items-center gap-2">
-                  <UiButton
+                  <UButton
                     @click="editChannel(channel)"
                     variant="ghost"
                     size="sm"
                   >
                     编辑
-                  </UiButton>
-                  <UiButton
+                  </UButton>
+                  <UButton
                     @click="handleDeleteChannel(channel)"
                     variant="ghost"
                     size="sm"
-                    class="text-red-600 hover:text-red-700"
+                    color="red"
                   >
                     删除
-                  </UiButton>
+                  </UButton>
                 </div>
               </td>
             </tr>
@@ -143,7 +143,10 @@
       </div>
 
       <div v-if="loading" class="p-8 text-center">
-        <LoadingSpinner />
+        <div class="flex items-center justify-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span class="ml-2 text-gray-600 dark:text-gray-400">加载中...</span>
+        </div>
       </div>
 
       <div v-if="!loading && filteredChannels.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400">
@@ -152,86 +155,102 @@
     </div>
 
     <!-- 创建/编辑栏目模态框 -->
-    <UiModal
-      v-model="showModal"
+    <UModal 
+      v-model:open="showModal" 
       :title="showCreateModal ? '新建栏目' : '编辑栏目'"
-      @close="closeModal"
+      class="w-full max-w-2xl"
     >
-      <form @submit.prevent="showCreateModal ? handleCreateChannel() : handleUpdateChannel()">
-        <div class="space-y-4">
-          <UiInput
-            v-model="channelForm.name"
-            label="栏目名称"
-            placeholder="请输入栏目名称"
-            required
-          />
-          
-          <UiInput
-            v-model="channelForm.slug"
-            label="栏目别名"
-            placeholder="请输入栏目别名（英文）"
-            required
-          />
-          
-          <div class="space-y-1">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              栏目描述
-            </label>
-            <textarea
-              v-model="channelForm.description"
-              rows="3"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              placeholder="请输入栏目描述"
-            ></textarea>
-          </div>
-          
-          <UiSelect
-            v-model="channelForm.parent_id"
-            label="父栏目"
-            placeholder="选择父栏目"
-            :options="[
-              { label: '无父栏目', value: '' },
-              ...parentChannels.map(c => ({ label: c.name, value: c.id }))
-            ]"
-          />
-          
-          <div class="grid grid-cols-2 gap-4">
-            <UiInput
-              v-model.number="channelForm.sort_order"
-              type="number"
-              label="排序"
-              :min="0"
-            />
+      <template #body>
+        <form @submit.prevent="showCreateModal ? handleCreateChannel() : handleUpdateChannel()">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                栏目名称 *
+              </label>
+              <UInput
+                v-model="channelForm.name"
+                placeholder="请输入栏目名称"
+                required
+              />
+            </div>
             
-            <UiSelect
-              v-model="channelForm.is_active"
-              label="状态"
-              :options="[
-                { label: '启用', value: true },
-                { label: '禁用', value: false }
-              ]"
-            />
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                栏目别名 *
+              </label>
+              <UInput
+                v-model="channelForm.slug"
+                placeholder="请输入栏目别名（英文）"
+                required
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                栏目描述
+              </label>
+              <UTextarea
+                v-model="channelForm.description"
+                :rows="3"
+                placeholder="请输入栏目描述"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                父栏目
+              </label>
+              <USelect
+                v-model="channelForm.parent_id"
+                :options="parentChannelOptions"
+                placeholder="无父栏目"
+              />
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  排序
+                </label>
+                <UInput
+                  v-model.number="channelForm.sort_order"
+                  type="number"
+                  :min="0"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  状态
+                </label>
+                <USelect
+                  v-model="channelForm.is_active"
+                  :options="statusOptions"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-        
-        <div class="flex justify-end gap-3 mt-6">
-          <UiButton
-            type="button"
+        </form>
+      </template>
+      
+      <template #footer>
+        <div class="flex justify-end gap-3">
+          <UButton
             @click="closeModal"
-            variant="secondary"
+            variant="outline"
           >
             取消
-          </UiButton>
-          <UiButton
-            type="submit"
+          </UButton>
+          <UButton
+            @click="showCreateModal ? handleCreateChannel() : handleUpdateChannel()"
             :loading="submitting"
-            variant="primary"
+            color="primary"
           >
             {{ submitting ? '保存中...' : '保存' }}
-          </UiButton>
+          </UButton>
         </div>
-      </form>
-    </UiModal>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -240,8 +259,7 @@ import type { Channel, ChannelForm } from '~/types'
 
 // 页面元数据
 definePageMeta({
-  layout: 'admin',
-  middleware: 'auth'
+  layout: 'admin'
 })
 
 // 使用栏目管理组合式函数
@@ -271,7 +289,7 @@ const channelForm = ref<ChannelForm>({
   name: '',
   slug: '',
   description: '',
-  parent_id: '',
+  parent_id: null,
   sort_order: 0,
   is_active: true
 })
@@ -279,6 +297,22 @@ const channelForm = ref<ChannelForm>({
 // 计算属性
 const filteredChannels = computed(() => searchChannels(searchQuery.value))
 const parentChannels = computed(() => getParentOptions(editingChannel.value?.id))
+
+// 父栏目选项（包含空选项）
+const parentChannelOptions = computed(() => [
+  { label: '无父栏目', value: null },
+  ...parentChannels.value.map(channel => ({
+    label: channel.name,
+    value: channel.id
+  }))
+])
+
+// 状态选项
+const statusOptions = [
+  { label: '启用', value: true },
+  { label: '禁用', value: false }
+]
+
 const showModal = computed({
   get: () => showCreateModal.value || showEditModal.value,
   set: (value: boolean) => {
@@ -340,7 +374,7 @@ const closeModal = (): void => {
     name: '',
     slug: '',
     description: '',
-    parent_id: '',
+    parent_id: null,
     sort_order: 0,
     is_active: true
   }
